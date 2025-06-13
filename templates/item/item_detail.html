@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}{{ item.name }} - 商品詳細{% endblock %}
 
@@ -7,7 +8,11 @@
 <section class="py-5">
     <div class="container px-4 px-lg-5 my-5">
         <div class="row gx-4 gx-lg-5 align-items-center">
-            <div class="col-md-6"><img class="card-img-top mb-5 mb-md-0" src="https://dummyimage.com/600x700/dee2e6/6c757d.jpg" alt="..." /></div>
+            {% if item.item_image %}
+                <img class="card-img-top" src="{{ item.item_image.url }}" alt="{{ item.name }}" width="300px"/>
+            {% else %}
+                <div class="col-md-6"><img class="card-img-top mb-5 mb-md-0" src="{% static 'img/600x700.jpg' %}" alt="No Image" /></div>
+            {% endif %}
             <div class="col-md-6">
                 <div class="small mb-1">SKU: {{ item.sku }}</div>
                 <h1 class="display-5 fw-bolder">{{ item.name }}</h1>
@@ -36,7 +41,11 @@
             <div class="col mb-5">
                 <div class="card h-100">
                     <!-- Product image-->
-                    <img class="card-img-top" src="https://dummyimage.com/450x300/dee2e6/6c757d.jpg" alt="..." />
+                    {% if related_item.item_image %}
+                        <img class="card-img-top" src="{{ related_item.item_image.url }}" alt="{{ related_item.name }}" height="100%"/>
+                    {% else %}
+                        <img class="card-img-top" src="https://dummyimage.com/450x300/dee2e6/6c757d.jpg" alt="..." height="100%"/>
+                    {% endif %}
                     <!-- Product details-->
                     <div class="card-body p-4">
                         <div class="text-center">

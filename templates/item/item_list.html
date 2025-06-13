@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}商品一覧 - Happiness Shop{% endblock %}
 
@@ -20,7 +21,11 @@
             <div class="col mb-5">
                 <div class="card h-100">
                     <!-- Product image-->
-                    <img class="card-img-top" src="https://dummyimage.com/450x300/dee2e6/6c757d.jpg" alt="..." />
+                    {% if item.item_image %}
+                        <img class="card-img-top" src="{{ item.item_image.url }}" alt="{{ item.name }}"/>
+                    {% else %}
+                        <img class="card-img-top" src="{% static 'img/450x300.jpg' %}" alt="No Image"/>
+                    {% endif %}
                     <!-- Product details-->
                     <div class="card-body p-4">
                         <div class="text-center">

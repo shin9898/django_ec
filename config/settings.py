@@ -32,7 +32,7 @@ DEBUG = env("DEBUG")
 if DEBUG:
     ALLOWED_HOSTS = [] # 開発環境用
 else:
-    ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['infinite-everglades-35887.herokuapp.com'])
+    ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["infinite-everglades-35887-c61444eb0da9.herokuapp.com"])  # 本番環境用
 
 
 # Application definition

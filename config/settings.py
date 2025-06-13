@@ -17,8 +17,12 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-env = environ.Env()
-environ.Env.read_env(env_file=str(BASE_DIR) + "/.env")
+env = environ.Env(
+    DEBUG=(bool, False), # DEBUGはデフォルトでFalse
+)
+
+if not os.environ.get('DYNO'):
+    environ.Env.read_env(env_file=str(BASE_DIR / '.env'))
 
 
 # Quick-start development settings - unsuitable for production
@@ -27,12 +31,13 @@ environ.Env.read_env(env_file=str(BASE_DIR) + "/.env")
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env("DEBUG")
+DEBUG = env.bool("DEBUG", default=False)
 
 if DEBUG:
     ALLOWED_HOSTS = [] # 開発環境用
 else:
-    ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["infinite-everglades-35887-c61444eb0da9.herokuapp.com"])  # 本番環境用
+    ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=['yourdomain.com'])
+
 
 
 # Application definition

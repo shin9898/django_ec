@@ -27,9 +27,12 @@ environ.Env.read_env(env_file=str(BASE_DIR) + "/.env")
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env("DEBUG")
 
-ALLOWED_HOSTS = []
+if DEBUG:
+    ALLOWED_HOSTS = [] # 開発環境用
+else:
+    ALLOWED_HOSTS = [env('ALLOWED_HOSTS', default='infinite-everglades-35887.herokuapp.com')]
 
 
 # Application definition

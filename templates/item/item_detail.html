@@ -50,7 +50,9 @@
                     <div class="card-body p-4">
                         <div class="text-center">
                             <!-- Product name-->
-                            <h5 class="fw-bolder">{{ related_item.name }}</h5>
+                            <a href="{% url 'item:item_detail' related_item.pk %}" class="text-decoration-none text-dark">
+                                <h5 class="fw-bolder">{{ related_item.name }}</h5>
+                            </a>
                             <!-- Product price-->
                             {{ related_item.price|floatformat:0 }}円
                         </div>

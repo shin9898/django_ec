@@ -33,10 +33,16 @@ SECRET_KEY = env("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool("DEBUG", default=False)
 
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# CSRF_COOKIE_SECUREをTrueに設定して、HTTPS接続でのみCSRFトークンを送信する
+CSRF_TRUSTED_ORIGINS = ['https://infinite-everglades-35887-c61444eb0da9.herokuapp.com']
+
+# ALLOWED_HOSTSは環境変数から取得し、開発環境では空リスト、本番環境ではHerokuのホスト名をデフォルトとする
 if DEBUG:
     ALLOWED_HOSTS = [] # 開発環境用
 else:
-    ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=['yourdomain.com'])
+    ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=['infinite-everglades-35887-c61444eb0da9.herokuapp.com'])
 
 
 

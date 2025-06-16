@@ -152,7 +152,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'), # ここでプロジェクトルートの static ディレクトリを指定
 ]
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles') # 本番環境で collectstatic がファイルを収集する場所
 

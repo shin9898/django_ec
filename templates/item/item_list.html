@@ -21,8 +21,8 @@
             <div class="col mb-5">
                 <div class="card h-100">
                     <!-- Product image-->
-                    {% if item.item_image %}
-                        <img class="card-img-top" src="{{ item.item_image.url }}" alt="{{ item.name }}"/>
+                    {% if item.image %}
+                        <img class="card-img-top" src="{{ item.image.url }}" alt="{{ item.name }}"/>
                     {% else %}
                         <img class="card-img-top" src="{% static 'img/450x300.jpg' %}" alt="No Image"/>
                     {% endif %}

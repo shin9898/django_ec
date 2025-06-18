@@ -8,8 +8,8 @@
 <section class="py-5">
     <div class="container px-4 px-lg-5 my-5">
         <div class="row gx-4 gx-lg-5 align-items-center">
-            {% if item.item_image %}
-                <img class="card-img-top" src="{{ item.item_image.url }}" alt="{{ item.name }}" width="300px"/>
+            {% if item.image %}
+                <img class="card-img-top" src="{{ item.image.url }}" alt="{{ item.name }}" width="300px"/>
             {% else %}
                 <div class="col-md-6"><img class="card-img-top mb-5 mb-md-0" src="{% static 'img/600x700.jpg' %}" alt="No Image" /></div>
             {% endif %}

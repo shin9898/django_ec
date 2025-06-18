@@ -41,19 +41,15 @@ CSRF_COOKIE_SECURE = True
 # CSRF_COOKIE_SECUREをTrueに設定して、HTTPS接続でのみCSRFトークンを送信する
 CSRF_TRUSTED_ORIGINS = ['https://infinite-everglades-35887-c61444eb0da9.herokuapp.com']
 
-# ALLOWED_HOSTSは環境変数から取得し、開発環境では空リスト、本番環境ではHerokuのホスト名をデフォルトとする
-if DEBUG:
-    ALLOWED_HOSTS = [] # 開発環境用
-else:
-    ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=['infinite-everglades-35887-c61444eb0da9.herokuapp.com'])
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=['127.0.0.1', 'localhost', '.ngrok.io'])
+
+if not DEBUG:
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
     CLOUDINARY_STORAGE  = {
         'CLOUD_NAME':env('CLOUDINARY_CLOUD_NAME'),
         'API_KEY': env('CLOUDINARY_API_KEY'),
         'API_SECRET': env('CLOUDINARY_API_SECRET'),
     }
-
-
 
 # Application definition
 

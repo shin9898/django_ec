@@ -36,10 +36,10 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 SESSION_COOKIE_SECURE = True
 
-CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = env.bool('CSRF_COOKIE_SECURE')
 
 # CSRF_COOKIE_SECUREをTrueに設定して、HTTPS接続でのみCSRFトークンを送信する
-CSRF_TRUSTED_ORIGINS = ['https://infinite-everglades-35887-c61444eb0da9.herokuapp.com']
+CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', default=[])
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=['127.0.0.1', 'localhost', '.ngrok.io'])
 

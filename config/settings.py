@@ -148,6 +148,7 @@ STATICFILES_DIRS = [
 ]
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles') # 本番環境で collectstatic がファイルを収集する場所
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage' # Whitenoiseを使用して静的ファイルを圧縮
 
 MEDIA_URL = '/media/'
 

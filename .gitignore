@@ -2,5 +2,5 @@
 *.log
 *.pyc
 __pycache__/
-staticfiles
+staticfiles/
 media/

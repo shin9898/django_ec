@@ -149,7 +149,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'), # 開発環境での静的ファイルのディレクトリ
 ]
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage' # Whitenoiseを使用して静的ファイルを圧縮
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage' # Whitenoiseを使用して静的ファイルを圧縮
 
 MEDIA_URL = '/media/'
 

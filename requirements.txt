@@ -2,7 +2,7 @@ asgiref==3.8.1
 certifi==2025.6.15
 charset-normalizer==3.4.2
 cloudinary==1.44.0
-Django==4.2.5
+Django>=4.2.11,<4.3
 django-cloudinary-storage==0.3.0
 django-environ==0.11.2
 gunicorn==22.0.0

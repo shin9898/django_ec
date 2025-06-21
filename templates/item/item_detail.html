@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ item.name }} - 商品詳細{% endblock %}
+
+{% block content %}
+<!-- Product section-->
+<section class="py-5">
+    <div class="container px-4 px-lg-5 my-5">
+        <div class="row gx-4 gx-lg-5 align-items-center">
+            {% if item.image %}
+                <img class="card-img-top" src="{{ item.image.url }}" alt="{{ item.name }}" width="300px"/>
+            {% else %}
+                <div class="col-md-6"><img class="card-img-top mb-5 mb-md-0" src="{% static 'img/600x700.jpg' %}" alt="No Image" /></div>
+            {% endif %}
+            <div class="col-md-6">
+                <div class="small mb-1">SKU: {{ item.sku }}</div>
+                <h1 class="display-5 fw-bolder">{{ item.name }}</h1>
+                <div class="fs-5 mb-5">
+                    <!-- <span class="text-decoration-line-through">$45.00</span> -->
+                    <span>{{ item.price|floatformat:0 }}円</span>
+                </div>
+                <p class="lead">{{ item.description }}</p>
+                <div class="d-flex">
+                    <input class="form-control text-center me-3" id="inputQuantity" type="num" value="1" style="max-width: 3rem" />
+                    <button class="btn btn-outline-dark flex-shrink-0" type="button">
+                        <i class="bi-cart-fill me-1"></i>
+                        Add to cart
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Related items section-->
+<section class="py-5 bg-light">
+    <div class="container px-4 px-lg-5 mt-5">
+        <h2 class="fw-bolder mb-4">Related products</h2>
+        <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+            {% for related_item in related_items %}
+            <div class="col mb-5">
+                <div class="card h-100">
+                    <!-- Product image-->
+                    {% if related_item.item_image %}
+                        <img class="card-img-top" src="{{ related_item.item_image.url }}" alt="{{ related_item.name }}" height="100%"/>
+                    {% else %}
+                        <img class="card-img-top" src="https://dummyimage.com/450x300/dee2e6/6c757d.jpg" alt="..." height="100%"/>
+                    {% endif %}
+                    <!-- Product details-->
+                    <div class="card-body p-4">
+                        <div class="text-center">
+                            <!-- Product name-->
+                            <a href="{% url 'item:item_detail' related_item.pk %}" class="text-decoration-none text-dark">
+                                <h5 class="fw-bolder">{{ related_item.name }}</h5>
+                            </a>
+                            <!-- Product price-->
+                            {{ related_item.price|floatformat:0 }}円
+                        </div>
+                    </div>
+                    <!-- Product actions-->
+                    <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                        <div class="text-center"><a class="btn btn-outline-dark mt-auto" href="#">Add to cart</a></div>
+                    </div>
+                    <!-- Product reviews-->
+                    <div class="d-flex justify-content-center small text-warning mb-2">
+                        <div class="bi-star-fill"></div>
+                        <div class="bi-star-fill"></div>
+                        <div class="bi-star-fill"></div>
+                        <div class="bi-star-fill"></div>
+                        <div class="bi-star-fill"></div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <!-- 関連商品がない場合のメッセージ -->
+            <div class="col-12 text-center">
+                <p>関連商品はありません。</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock content %}

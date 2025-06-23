@@ -1,5 +1,6 @@
 from django.shortcuts import render
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, CreateView
+from django.urls import reverse_lazy
 
 from .models import Item
 
@@ -67,3 +68,9 @@ class ManageItemListView(ListView):
         })
 
         return context
+
+class ManageItemCreateView(CreateView):
+    model = Item
+    template_name = 'item/manage_item_create.html'
+    fields = ['name', 'description', 'price', 'stock', 'sku', 'image', 'is_published']
+    success_url = reverse_lazy('item:manage_item_list')

@@ -2,6 +2,9 @@ from django.shortcuts import redirect
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib import messages
 from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
+
+from basicauth.decorators import basic_auth_required
 
 from .models import Item
 from .forms import ItemForm
@@ -43,6 +46,7 @@ class ItemDetailView(DetailView):
         context['related_items'] = related_items
         return context
 
+@method_decorator(basic_auth_required, name='dispatch')
 class ManageItemListView(ListView):
     model = Item
     template_name = 'item/manage_item_list.html'
@@ -71,6 +75,7 @@ class ManageItemListView(ListView):
 
         return context
 
+@method_decorator(basic_auth_required, name='dispatch')
 class ManageItemCreateView(CreateView):
     model = Item
     template_name = 'item/manage_item_form.html'
@@ -83,6 +88,7 @@ class ManageItemCreateView(CreateView):
         context['title'] = '商品作成'
         return context
 
+@method_decorator(basic_auth_required, name='dispatch')
 class ManageItemUpdateView(UpdateView):
     model = Item
     template_name = 'item/manage_item_form.html'
@@ -95,6 +101,7 @@ class ManageItemUpdateView(UpdateView):
         context['title'] = '商品更新'
         return context
 
+@method_decorator(basic_auth_required, name='dispatch')
 class ManageItemDeleteView(DeleteView):
     model = Item
     success_url = reverse_lazy('item:manage_item_list')

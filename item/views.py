@@ -71,6 +71,12 @@ class ManageItemListView(ListView):
 
 class ManageItemCreateView(CreateView):
     model = Item
-    template_name = 'item/manage_item_create.html'
+    template_name = 'item/manage_item_form.html'
     fields = ['name', 'description', 'price', 'stock', 'sku', 'image', 'is_published']
     success_url = reverse_lazy('item:manage_item_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['action'] = 'create'
+        context['title'] = '商品作成'
+        return context

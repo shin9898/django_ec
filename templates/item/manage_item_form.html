@@ -74,7 +74,7 @@
                                 <span class="input-group-text">¥</span>
                                 <input type="number" class="form-control {% if form.price.errors %}is-invalid{% endif %}"
                                        id="{{ form.price.id_for_label }}" name="{{ form.price.name }}"
-                                       value="{{ form.price.value|default:'' }}"
+                                       value="{{ form.price.value|floatformat:0 }}"
                                        min="1" placeholder="価格を入力してください" required>
                             </div>
                             {% if form.price.errors %}

@@ -19,7 +19,7 @@
                     <div class="d-flex justify-content-between">
                         <div>
                             <h5>総商品数</h5>
-                            <h3>{{ items|length }}</h3>
+                            <h3>{{ total_items }}</h3>
                         </div>
                         <i class="bi bi-box-seam fs-1"></i>
                     </div>
@@ -32,7 +32,7 @@
                     <div class="d-flex justify-content-between">
                         <div>
                             <h5>公開中</h5>
-                            <h3>{{ items|length }}</h3>
+                            <h3>{{ published_items }}</h3>
                         </div>
                         <i class="bi bi-eye fs-1"></i>
                     </div>
@@ -44,8 +44,8 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
                         <div>
-                            <h5>在庫少</h5>
-                            <h3>0</h3>
+                            <h5>在庫少（5個以下）</h5>
+                            <h3>{{ low_stock_items }}</h3>
                         </div>
                         <i class="bi bi-exclamation-triangle fs-1"></i>
                     </div>
@@ -58,7 +58,7 @@
                     <div class="d-flex justify-content-between">
                         <div>
                             <h5>在庫なし</h5>
-                            <h3>0</h3>
+                            <h3>{{ out_of_stock_items }}</h3>
                         </div>
                         <i class="bi bi-x-circle fs-1"></i>
                     </div>

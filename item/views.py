@@ -48,3 +48,22 @@ class ManageItemListView(ListView):
     def get_queryset(self):
         queryset = super().get_queryset()  # デフォルトのクエリセット（全商品）を取得
         return queryset.order_by('-created_at')  # 新しい順に並べ替え
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # 統計データを計算
+        total_items = Item.objects.count()
+        published_items = Item.objects.filter(is_published=True).count()
+        low_stock_items = Item.objects.filter(stock__lte=5, stock__gt=0).count()  # 1-5個
+        out_of_stock_items = Item.objects.filter(stock=0).count()  # 0個
+
+        # コンテキストに追加
+        context.update({
+            'total_items': total_items,
+            'published_items': published_items,
+            'low_stock_items': low_stock_items,
+            'out_of_stock_items': out_of_stock_items,
+        })
+
+        return context

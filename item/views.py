@@ -39,3 +39,12 @@ class ItemDetailView(DetailView):
 
         context['related_items'] = related_items
         return context
+
+class ManageItemListView(ListView):
+    model = Item
+    template_name = 'item/manage_item_list.html'
+    context_object_name = 'items'
+
+    def get_queryset(self):
+        queryset = super().get_queryset()  # デフォルトのクエリセット（全商品）を取得
+        return queryset.order_by('-created_at')  # 新しい順に並べ替え

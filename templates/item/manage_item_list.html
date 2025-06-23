@@ -1,36 +1,157 @@
 {% extends "base.html" %}
-{% block title %}商品管理{% endblock %}
+{% block title %}商品管理 - Happiness Shop{% endblock %}
 
 {% block content %}
-<h1>商品管理</h1>
-<table>
-    <thead>
-        <tr>
-            <th>商品名</th>
-            <th>価格</th>
-            <th>在庫数</th>
-            <th>公開状態</th>
-            <th>操作</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for item in items %}
-        <tr>
-            <td>{{ item.name }}</td>
-            <td>{{ item.price }}</td>
-            <td>{{ item.stock }}</td>
-            <td>{{ item.is_published|yesno:"公開,非公開" }}</td>
-            <td>
-                <a href="{% url 'item:item_detail' item.pk %}">詳細</a>
-                <a href="{% url 'item:item_edit' item.pk %}">編集</a>
-                <a href="{% url 'item:item_delete' item.pk %}">削除</a>
-            </td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="5">商品がありません。</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="container px-4 px-lg-5 mt-5">
+    <!-- ページヘッダー -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bolder">商品管理</h2>
+        <a href="#" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-1"></i>新規作成
+        </a>
+    </div>
+
+    <!-- 統計情報 -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5>総商品数</h5>
+                            <h3>{{ items|length }}</h3>
+                        </div>
+                        <i class="bi bi-box-seam fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5>公開中</h5>
+                            <h3>{{ items|length }}</h3>
+                        </div>
+                        <i class="bi bi-eye fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5>在庫少</h5>
+                            <h3>0</h3>
+                        </div>
+                        <i class="bi bi-exclamation-triangle fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-danger text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h5>在庫なし</h5>
+                            <h3>0</h3>
+                        </div>
+                        <i class="bi bi-x-circle fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 商品テーブル -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title mb-0">商品一覧</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th style="width: 60px;">画像</th>
+                            <th>商品名</th>
+                            <th style="width: 100px;">価格</th>
+                            <th style="width: 80px;">在庫</th>
+                            <th style="width: 100px;">SKU</th>
+                            <th style="width: 100px;">状態</th>
+                            <th style="width: 120px;">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in items %}
+                        <tr>
+                            <td>
+                                {% if item.image %}
+                                    <img src="{{ item.image.url }}" class="img-thumbnail"
+                                         style="width: 50px; height: 50px; object-fit: cover;" alt="{{ item.name }}">
+                                {% else %}
+                                    <div class="bg-light text-center text-muted"
+                                         style="width: 50px; height: 50px; line-height: 50px; font-size: 12px;">
+                                        <i class="bi bi-image"></i>
+                                    </div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="fw-bold">{{ item.name }}</div>
+                                <small class="text-muted">{{ item.description|truncatewords:8|default:"説明なし" }}</small>
+                            </td>
+                            <td>
+                                <span class="fw-bold text-primary">¥{{ item.price|floatformat:0 }}</span>
+                            </td>
+                            <td>
+                                <span class="badge {% if item.stock <= 5 %}bg-danger{% elif item.stock <= 10 %}bg-warning{% else %}bg-success{% endif %}">
+                                    {{ item.stock }}
+                                </span>
+                            </td>
+                            <td>
+                                <code>{{ item.sku|default:"未設定" }}</code>
+                            </td>
+                            <td>
+                                {% if item.is_published %}
+                                    <span class="badge bg-success">公開中</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">非公開</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a href="{% url 'item:item_detail' item.pk %}"
+                                       class="btn btn-outline-primary" title="詳細">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a href="#" class="btn btn-outline-success" title="編集">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a href="#" class="btn btn-outline-danger" title="削除">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center py-4">
+                                <i class="bi bi-box-seam fs-1 text-muted"></i>
+                                <div class="mt-2 text-muted">商品がありません</div>
+                                <a href="#" class="btn btn-primary btn-sm mt-2">
+                                    <i class="bi bi-plus-circle me-1"></i>最初の商品を作成
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

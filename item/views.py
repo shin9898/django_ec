@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.views.generic import ListView, DetailView, CreateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.urls import reverse_lazy
 
 from .models import Item
@@ -79,4 +79,16 @@ class ManageItemCreateView(CreateView):
         context = super().get_context_data(**kwargs)
         context['action'] = 'create'
         context['title'] = '商品作成'
+        return context
+
+class ManageItemUpdateView(UpdateView):
+    model = Item
+    template_name = 'item/manage_item_form.html'
+    fields = ['name', 'description', 'price', 'stock', 'sku', 'image', 'is_published']
+    success_url = reverse_lazy('item:manage_item_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['action'] = 'update'
+        context['title'] = '商品更新'
         return context

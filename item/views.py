@@ -1,8 +1,10 @@
-from django.shortcuts import render
-from django.views.generic import ListView, DetailView, CreateView, UpdateView
+from django.shortcuts import redirect
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.contrib import messages
 from django.urls import reverse_lazy
 
 from .models import Item
+from .forms import ItemForm
 
 # Create your views here.
 class ItemListView(ListView):
@@ -92,3 +94,29 @@ class ManageItemUpdateView(UpdateView):
         context['action'] = 'update'
         context['title'] = '商品更新'
         return context
+
+class ManageItemDeleteView(DeleteView):
+    model = Item
+    success_url = reverse_lazy('item:manage_item_list')
+
+    def get(self, request, *args, **kwargs):
+        return redirect(self.success_url)
+
+    def delete(self, request, *args, **kwargs):
+        # 削除対象のオブジェクトを取得
+        self.object = self.get_object()
+        # 削除前に商品名を保存
+        # 削除後はself.objectにアクセスできないため事前保存が必要
+        item_name = self.object.name
+        # 親クラス(DeleteView)の削除処理を実行
+        response = super().delete(request, *args, **kwargs)
+        # 削除成功のFlashメッセージを追加
+        messages.success(
+            self.request,
+            f'商品「{item_name}」を削除しました。',
+        )
+        return response
+
+    def post(self, request, *args, **kwargs):
+        # POSTリクエストでの削除を許可
+        return super().post(request, *args, **kwargs)

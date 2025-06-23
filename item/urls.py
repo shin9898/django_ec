@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import ItemListView, ItemDetailView, ManageItemListView, ManageItemCreateView, ManageItemUpdateView
+from .views import ItemListView, ItemDetailView, ManageItemListView, ManageItemCreateView, ManageItemUpdateView, ManageItemDeleteView
 
 app_name = 'item'
 # URL configuration for the item app
@@ -10,4 +10,5 @@ urlpatterns = [
     path('manage/', ManageItemListView.as_view(), name='manage_item_list'),
     path('manage/create/', ManageItemCreateView.as_view(), name='manage_item_create'),
     path('manage/update/<int:pk>/', ManageItemUpdateView.as_view(), name='manage_item_update'),
+    path('manage/delete/<int:pk>/', ManageItemDeleteView.as_view(), name='manage_item_delete'),
 ]

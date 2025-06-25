@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     'cloudinary_storage',
     'cloudinary',
     'item',
+    'cart',
 ]
 
 MIDDLEWARE = [

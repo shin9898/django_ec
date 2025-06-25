@@ -1,0 +1,181 @@
+<!-- item/manage_item_form.html -->
+{% extends "base.html" %}
+{% block title %}
+    {% if object %}商品編集{% else %}商品作成{% endif %} - Happiness Shop
+{% endblock %}
+
+{% block content %}
+<div class="container px-4 px-lg-5 mt-5">
+    <!-- パンくずリスト -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'item:manage_item_list' %}">商品管理</a></li>
+            <li class="breadcrumb-item active">
+                {% if object %}{{ object.name }} の編集{% else %}新規作成{% endif %}
+            </li>
+        </ol>
+    </nav>
+
+    <!-- ページヘッダー -->
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title mb-0">
+                        {% if object %}
+                            <i class="bi bi-pencil me-2"></i>商品編集
+                        {% else %}
+                            <i class="bi bi-plus-circle me-2"></i>商品作成
+                        {% endif %}
+                    </h3>
+                </div>
+
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data" novalidate>
+                        {% csrf_token %}
+
+                        <!-- 商品名 -->
+                        <div class="mb-3">
+                            <label for="{{ form.name.id_for_label }}" class="form-label fw-bold">
+                                商品名 <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control {% if form.name.errors %}is-invalid{% endif %}"
+                                   id="{{ form.name.id_for_label }}" name="{{ form.name.name }}"
+                                   value="{{ form.name.value|default:'' }}"
+                                   placeholder="商品名を入力してください" required>
+                            {% if form.name.errors %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.name.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- 商品説明 -->
+                        <div class="mb-3">
+                            <label for="{{ form.description.id_for_label }}" class="form-label fw-bold">
+                                商品説明
+                            </label>
+                            <textarea class="form-control {% if form.description.errors %}is-invalid{% endif %}"
+                                      id="{{ form.description.id_for_label }}" name="{{ form.description.name }}"
+                                      rows="4" placeholder="商品の詳細説明を入力してください">{{ form.description.value|default:'' }}</textarea>
+                            {% if form.description.errors %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.description.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- 価格 -->
+                        <div class="mb-3">
+                            <label for="{{ form.price.id_for_label }}" class="form-label fw-bold">
+                                価格 <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text">¥</span>
+                                <input type="number" class="form-control {% if form.price.errors %}is-invalid{% endif %}"
+                                       id="{{ form.price.id_for_label }}" name="{{ form.price.name }}"
+                                       value="{{ form.price.value|floatformat:0 }}"
+                                       min="1" placeholder="価格を入力してください" required>
+                            </div>
+                            {% if form.price.errors %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.price.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- 在庫数 -->
+                        <div class="mb-3">
+                            <label for="{{ form.stock.id_for_label }}" class="form-label fw-bold">
+                                在庫数 <span class="text-danger">*</span>
+                            </label>
+                            <input type="number" class="form-control {% if form.stock.errors %}is-invalid{% endif %}"
+                                   id="{{ form.stock.id_for_label }}" name="{{ form.stock.name }}"
+                                   value="{{ form.stock.value|default:'' }}"
+                                   min="0" placeholder="在庫数を入力してください" required>
+                            {% if form.stock.errors %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.stock.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- SKU -->
+                        <div class="mb-3">
+                            <label for="{{ form.sku.id_for_label }}" class="form-label fw-bold">
+                                商品コード/SKU
+                            </label>
+                            <input type="text" class="form-control {% if form.sku.errors %}is-invalid{% endif %}"
+                                   id="{{ form.sku.id_for_label }}" name="{{ form.sku.name }}"
+                                   value="{{ form.sku.value|default:'' }}"
+                                   placeholder="商品コードを入力してください">
+                            {% if form.sku.errors %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.sku.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- 商品画像 -->
+                        <div class="mb-3">
+                            <label for="{{ form.image.id_for_label }}" class="form-label fw-bold">
+                                商品画像
+                            </label>
+                            <input type="file" class="form-control {% if form.image.errors %}is-invalid{% endif %}"
+                                   id="{{ form.image.id_for_label }}" name="{{ form.image.name }}"
+                                   accept="image/*">
+
+                            <!-- 既存画像の表示（編集時のみ） -->
+                            {% if object and object.image %}
+                                <div class="mt-2">
+                                    <small class="text-muted">現在の画像:</small><br>
+                                    <img src="{{ object.image.url }}" alt="{{ object.name }}"
+                                         class="img-thumbnail mt-1" style="max-width: 200px; max-height: 200px;">
+                                </div>
+                            {% endif %}
+
+                            {% if form.image.errors %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.image.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- 公開状態 -->
+                        <div class="mb-4">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input"
+                                       id="{{ form.is_published.id_for_label }}" name="{{ form.is_published.name }}"
+                                       {% if form.is_published.value %}checked{% endif %}>
+                                <label for="{{ form.is_published.id_for_label }}" class="form-check-label fw-bold">
+                                    公開状態
+                                </label>
+                                <div class="form-text">チェックすると商品が公開されます</div>
+                            </div>
+                            {% if form.is_published.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.is_published.errors %}{{ error }}{% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- ボタン -->
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                {% if object %}
+                                    <i class="bi bi-check-circle me-1"></i>更新する
+                                {% else %}
+                                    <i class="bi bi-plus-circle me-1"></i>作成する
+                                {% endif %}
+                            </button>
+                            <a href="{% url 'item:manage_item_list' %}" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left me-1"></i>戻る
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

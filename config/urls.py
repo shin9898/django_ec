@@ -8,5 +8,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('items/', include('item.urls')),
     path('', RedirectView.as_view(url='/items/', permanent=True)),  # ルートURLを/items/にリダイレクト
-    path('cart_list/', include('cart.urls')),
+    path('cart/', include('cart.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

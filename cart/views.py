@@ -37,8 +37,13 @@ class CartListView(ListView):
                 cart = Cart.objects.get(session_key=session_key)
                 context['total_price'] = cart.total_price  # @propertyを呼び出し
                 context['cart'] = cart
+                context['total_items_count'] = cart.total_items_count
             except Cart.DoesNotExist:
                 context['total_price'] = 0
+                context['total_items_count'] = 0
+        else:
+            context['total_price'] = 0
+            context['total_items_count'] = 0
 
         return context
 
@@ -60,6 +65,15 @@ class AddToCartView(View):
             if item.stock < quantity:
                 messages.error(request, f"{item.name}の在庫が不足しています（在庫: {item.stock}個）")
                 return self.redirect_back(item_id)
+
+            if not item.is_published:
+                messages.error(request, "この商品は現在購入できません")
+                return self.redirect_back(item_id)
+
+            if item.stock <= 0:
+                messages.error(request, f"{item.name}は在庫切れです")
+                return self.redirect_back(item_id)
+
 
             if not request.session.session_key:
                 request.session.create()

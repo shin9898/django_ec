@@ -33,7 +33,24 @@
                     <span>¥{{ cart_item.item.price|floatformat:0 }}</span>
                 </div>
                 <div class="mt-1">
-                    <small class="text-muted">数量: {{ cart_item.quantity }}個</small>
+                    <small class="text-muted">数量: </small>
+                    <form method="post" action="{% url 'cart:update_cart' cart_item.item.id %}" class="d-inline">
+                        {% csrf_token %}
+                        <small class="text-muted">
+                            <select name="quantity"
+                                    style="border:none; background:transparent; color:#6c757d; font-size:inherit; padding:0; cursor:pointer; width:auto;"
+                                    onchange="this.form.submit();">
+                                <option value="0" {% if cart_item.quantity == 0 %}selected{% endif %}>0</option>
+                                {% for i in "123456789012345678901234567890"|make_list %}
+                                    {% if forloop.counter <= cart_item.item.stock %}
+                                        <option value="{{ forloop.counter }}" {% if cart_item.quantity == forloop.counter %}selected{% endif %}>
+                                            {{ forloop.counter }}
+                                        </option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </small>
+                    </form>
                 </div>
               </div>
               <span class="text-body-secondary">小計: ¥ {{ cart_item.total_price|floatformat:0 }}</span>

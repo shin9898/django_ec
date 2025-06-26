@@ -140,3 +140,49 @@ class RemoveFromCartView(View):
         """GETリクエストは拒否"""
         messages.error(request, "不正なリクエストです")
         return redirect('cart:cart_list')
+
+class UpdateCartView(View):
+    """カート内商品の数量を更新"""
+    def post(self, request, item_id):
+        try:
+            session_key = request.session.session_key
+            if not session_key:
+                messages.error(request, 'カートが見つかりません')
+                return redirect('cart:cart_list')
+
+            cart = get_object_or_404(Cart, session_key=session_key)
+            cart_item = get_object_or_404(CartItem, cart=cart, item_id=item_id)
+
+            try:
+                new_quantity = int(request.POST.get('quantity', 1))
+            except (ValueError, TypeError):
+                messages.error(request, '無効な数量です')
+                return redirect('cart:cart_list')
+
+            if new_quantity < 0:
+                messages.error(request, '数量は0以上を指定してください')
+                return redirect('cart:cart_list')
+
+            if new_quantity == 0:
+                item_name = cart_item.item.name
+                cart_item.delete()
+                messages.success(request, f'{item_name}をカートから削除しました')
+                return redirect('cart:cart_list')
+
+            if new_quantity > cart_item.item.stock:
+                messages.warning(request, f"{cart_item.item.name}の在庫が不足しています（在庫: {cart_item.item.stock}個）")
+                return redirect('cart:cart_list')
+
+            old_quantity = cart_item.quantity
+            cart_item.quantity = new_quantity
+            cart_item.save()
+            messages.success(request, f"{cart_item.item.name}の数量を{old_quantity}から{new_quantity}に更新しました")
+            return redirect('cart:cart_list')
+        except Exception as e:
+            messages.error(request, '数量の更新に失敗しました')
+            return redirect('cart:cart_list')
+
+    def get(self, request, item_id):
+        """GETリクエストは拒否"""
+        messages.error(request, "不正なリクエストです")
+        return redirect('cart:cart_list')

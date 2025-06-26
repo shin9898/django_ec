@@ -11,10 +11,12 @@
   <div class="container">
     <main>
       <div class="py-5 text-center">
-        <h1 class="h2">商品購入</h1>
-        <p class="lead">
-        </p>
+        <h1 class="h2">商品ご購入</h1>
       </div>
+      <!-- Messages Section -->
+      {% include 'includes/messages.html' %}
+
+      <!-- Cart Section -->
       <div class="row g-5">
         <div class="col-md-5 col-lg-4 order-md-last">
           <h4 class="d-flex justify-content-between align-items-center mb-3">
@@ -26,12 +28,25 @@
             <li class="list-group-item d-flex justify-content-between lh-sm">
               <div>
                 <h6 class="my-0">{{ cart_item.item.name }}</h6>
-                <small class="text-body-secondary">{{ cart_item.item.description|default:"商品説明" }}</small>
+                <small class="text-body-secondary">{{ cart_item.item.description|default:"商品説明"|truncatechars:50 }}</small>
+                <div class="mt-1">
+                    <span>¥{{ cart_item.item.price|floatformat:0 }}</span>
+                </div>
                 <div class="mt-1">
                     <small class="text-muted">数量: {{ cart_item.quantity }}個</small>
                 </div>
               </div>
-              <span class="text-body-secondary">¥{{ cart_item.total_price|floatformat:0 }}</span>
+              <span class="text-body-secondary">小計: ¥ {{ cart_item.total_price|floatformat:0 }}</span>
+              <!-- 削除ボタン -->
+              <div class="col-md-1 text-center">
+                <form method="post" action="{% url 'cart:remove_from_cart' cart_item.item.id %}"
+                      onsubmit="return confirm('{{ cart_item.item.name }}をカートから削除しますか？');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-danger btn-sm" title="削除">
+                        <i class="bi-trash"></i>
+                    </button>
+                </form>
+              </div>
             </li>
             {% empty %}
             <li class="list-group-item text-center">

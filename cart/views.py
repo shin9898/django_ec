@@ -113,3 +113,30 @@ class AddToCartView(View):
         """GETリクエストは拒否"""
         messages.error(request, "不正なリクエストです")
         return redirect('item:item_detail', pk=item_id)
+
+class RemoveFromCartView(View):
+    """カートから商品を削除"""
+    def post(self, request, item_id):
+        try:
+            session_key = request.session.session_key
+            if not session_key:
+                messages.error(request, "カートが見つかりません")
+                return redirect('cart:cart_list')
+            cart = get_object_or_404(Cart, session_key=session_key)
+            cart_item = get_object_or_404(CartItem, cart=cart, item_id=item_id)
+
+            # 削除前に商品名を保存（メッセージ用）
+            item_name = cart_item.item.name
+            quantity = cart_item.quantity
+
+            cart_item.delete()
+            messages.success(request, f"{item_name} ({quantity}個)をカートから削除しました")
+            return redirect('cart:cart_list')
+        except Exception as e:
+            messages.error(request, 'カートからの削除に失敗しました')
+            return redirect('cart:cart_list')
+
+    def get(self, request, item_id):
+        """GETリクエストは拒否"""
+        messages.error(request, "不正なリクエストです")
+        return redirect('cart:cart_list')

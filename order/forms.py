@@ -8,6 +8,7 @@ class OrderForm(forms.ModelForm):
             'first_name',
             'last_name',
             'email',
+            'username',
             'postal_code',
             'prefecture',
             'city',
@@ -32,6 +33,11 @@ class OrderForm(forms.ModelForm):
             'email': forms.EmailInput(attrs={
                 'class': 'form-control',
                 'placeholder': 'you@example.com',
+                'required': True
+            }),
+            'username': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'username',
                 'required': True
             }),
             'postal_code': forms.TextInput(attrs={

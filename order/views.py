@@ -18,8 +18,8 @@ class CheckoutView(CreateView):
     def dispatch(self, request, *args, **kwargs):
         """リクエスト処理前の共通チェック"""
         try:
-            self.cart = Cart.objects.get(session_key=request.session_key)
-            self.cart_items = self.cart.items.all()
+            self.cart = Cart.objects.get(session_key=request.session.session_key)
+            self.cart_items = self.cart.cart_items.all()
         except Cart.DoesNotExist:
             messages.error(request, 'カートが空です')
             return redirect('item:item_list')

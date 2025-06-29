@@ -1,8 +1,12 @@
-from django.views.generic import CreateView, ListView
+from django.views.generic import CreateView, ListView, DetailView
 from django.contrib import messages
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
+from django.utils import timezone
+from datetime import timedelta
+from django.db.models import Prefetch
+
 
 from basicauth.decorators import basic_auth_required
 from cart.models import Cart
@@ -71,12 +75,54 @@ class CheckoutView(CreateView):
 
 @method_decorator(basic_auth_required, name='dispatch')
 class OrderListView(ListView):
-    """管理者用：支払い済みのすべての注文を表示"""
     model = Order
     template_name = 'order/order_list.html'
     context_object_name = 'orders'
 
     def get_queryset(self):
-        queryset = super().get_queryset() # デフォルトのクエリセット（全注文履歴）を取得
-        queryset = queryset.filter(paid=True).order_by('-created_at')
+        # URLパラメータから期間を取得
+        period = self.request.GET.get('period', '3months')
+
+        # 期間に応じた日数を設定
+        if period == '1month':
+            days = 30
+        elif period == '6months':
+            days = 180
+        elif period == '1year':
+            days = 365
+        elif period == 'all':
+            days = None
+        else:  # 3months (デフォルト)
+            days = 90
+
+        # クエリセットを構築
+        queryset = Order.objects.filter(paid=True)
+
+        if days is not None:
+            start_date = timezone.now() - timedelta(days=days)
+            queryset = queryset.filter(created_at__gte=start_date)
+
+        queryset = queryset.prefetch_related(
+            Prefetch('items', queryset=OrderItem.objects.select_related('item'))
+        ).order_by('-created_at')
+
         return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # 日付でグループ化
+        orders_by_date = {}
+        for order in context['orders']:
+            date_key = order.created_at.date()
+            if date_key not in orders_by_date:
+                orders_by_date[date_key] = []
+            orders_by_date[date_key].append(order)
+
+        context['orders_by_date'] = dict(sorted(orders_by_date.items(), reverse=True))
+        return context
+
+
+@method_decorator(basic_auth_required, name='dispatch')
+class OrderDetailView(DetailView):
+    pass

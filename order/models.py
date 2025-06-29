@@ -8,6 +8,7 @@ class Order(models.Model):
     first_name = models.CharField(max_length=30, verbose_name='名')
     last_name = models.CharField(max_length=30, verbose_name='姓')
     email = models.EmailField(verbose_name='メールアドレス')
+    username = models.CharField(max_length=50, verbose_name='ユーザーネーム')
 
     # 住所情報
     postal_code = models.CharField(max_length=8, verbose_name='郵便番号')

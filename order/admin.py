@@ -5,7 +5,10 @@ from .models import Order, OrderItem
 class OrderItemInline(admin.TabularInline):
     model = OrderItem
     extra = 0  # 空の追加フォームを表示しない
-    readonly_fields = ('get_cost_display',)  # 修正
+    readonly_fields = (
+        'item_name', 'item_description', 'item_price', 'item_image',
+        'quantity', 'get_cost_display',
+        )
     fields = ('item', 'item_name', 'item_price', 'quantity', 'get_cost_display')
 
     def get_cost_display(self, obj):
@@ -21,6 +24,7 @@ class OrderAdmin(admin.ModelAdmin):
         'id',
         'get_customer_name',
         'email',
+        'username',
         'get_total_cost_display',
         'paid',
         'created_at'
@@ -34,6 +38,7 @@ class OrderAdmin(admin.ModelAdmin):
         'email',
         'first_name',
         'last_name',
+        'username',
         'id'
     ]
     readonly_fields = [
@@ -47,7 +52,7 @@ class OrderAdmin(admin.ModelAdmin):
             'fields': ('paid',)  # ← id, created_at, updated_at, get_total_cost_display を削除
         }),
         ('顧客情報', {
-            'fields': ('first_name', 'last_name', 'email')
+            'fields': ('first_name', 'last_name', 'email', 'username')
         }),
         ('住所情報', {
             'fields': ('postal_code', 'prefecture', 'city', 'address_line1', 'address_line2')  # ← get_full_address を削除
@@ -90,9 +95,11 @@ class OrderItemAdmin(admin.ModelAdmin):
     search_fields = [
         'order__id',
         'order__email',
+        'order__username',
         'item_name'
     ]
     readonly_fields = [
+        'item_name', 'item_description', 'item_price', 'item_image',
         'created_at',
         'get_cost_display'
     ]

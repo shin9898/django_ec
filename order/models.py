@@ -72,4 +72,6 @@ class OrderItem(models.Model):
 
     def get_cost(self):
         """小計を計算"""
+        if self.item_price is None:
+            return 0
         return self.item_price * self.quantity

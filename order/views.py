@@ -1,8 +1,10 @@
-from django.views.generic import CreateView
+from django.views.generic import CreateView, ListView
 from django.contrib import messages
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
 
+from basicauth.decorators import basic_auth_required
 from cart.models import Cart
 from .forms import OrderForm
 from .models import Order, OrderItem
@@ -66,3 +68,15 @@ class CheckoutView(CreateView):
                 item_image=cart_item.item.image.url if cart_item.item.image else None,
                 quantity=cart_item.quantity
             )
+
+@method_decorator(basic_auth_required, name='dispatch')
+class OrderListView(ListView):
+    """管理者用：支払い済みのすべての注文を表示"""
+    model = Order
+    template_name = 'order/order_list.html'
+    context_object_name = 'orders'
+
+    def get_queryset(self):
+        queryset = super().get_queryset() # デフォルトのクエリセット（全注文履歴）を取得
+        queryset = queryset.filter(paid=True).order_by('-created_at')
+        return queryset

@@ -1,5 +1,7 @@
 from django.db import models
 
+from item.models import Item
+
 # Create your models here.
 class Order(models.Model):
     # 顧客情報
@@ -47,3 +49,27 @@ class Order(models.Model):
         if self.address_line2:
             address_parts.append(self.address_line2)
         return ' '.join(address_parts)
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE, verbose_name='注文')
+    item = models.ForeignKey(Item, on_delete=models.PROTECT, verbose_name='商品')
+
+    # 購入時の商品情報 (Snapshot)
+    item_name = models.CharField(max_length=200, verbose_name='商品名')
+    item_description = models.TextField(blank=True, null=True, verbose_name='商品説明')
+    item_price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='商品価格')
+    item_image = models.URLField(blank=True, null=True, verbose_name='商品画像URL')
+
+    # 注文情報
+    quantity = models.PositiveIntegerField(default=1, verbose_name='数量')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='注文日時')
+
+    class Meta:
+        db_table = 'order_items'
+
+    def __str__(self):
+        return f"{self.item_name} x {self.quantity}"
+
+    def get_cost(self):
+        """小計を計算"""
+        return self.item_price * self.quantity

@@ -176,7 +176,7 @@ else:
     EMAIL_HOST_PASSWORD = os.environ.get('GMAIL_APP_PASSWORD')
     DEFAULT_FROM_EMAIL = os.environ.get('GMAIL_USER')
 
-EMAIL_SUBJECT_PREFIX = '[Happiness Shop] '
+EMAIL_SUBJECT_PREFIX = '[Happiness Shop]'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

@@ -12,6 +12,7 @@ from basicauth.decorators import basic_auth_required
 from cart.models import Cart
 from .forms import OrderForm
 from .models import Order, OrderItem
+from .utils import send_order_confirmation_email
 
 # Create your views here.
 class CheckoutView(CreateView):
@@ -47,12 +48,27 @@ class CheckoutView(CreateView):
 
     def form_valid(self, form):
         """フォーム送信成功時の処理"""
+        # 注文を保存
         self.object = form.save(commit=False)
         self.object.paid = True
         self.object.save()
+
+        # 注文アイテム作成 (Snapshotパターン)
         self.create_order_items()
+
+        # メール送信処理
+        email_sent = send_order_confirmation_email(self.object)
+
+        # カート削除
         self.cart.delete()
-        messages.success(self.request, '購入ありがとうございます')
+
+        # メール送信結果に応じたメッセージ表示
+        if email_sent:
+            messages.success(self.request, 'ご購入ありがとうございます。確認メールをお送りしました。')
+        else:
+            messages.success(self.request, '購入ありがとうございます。')
+            messages.warning(self.request, 'メール送信でエラーが発生しました。お問い合わせください。')
+
         return super().form_valid(form)
 
     def form_invalid(self, form):

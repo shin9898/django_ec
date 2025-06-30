@@ -2,7 +2,7 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}注文履歴{% endblock %}
+{% block title %}購入履歴{% endblock %}
 
 {% block content %}
 <div class="container-fluid bg-light py-4">
@@ -12,11 +12,11 @@
             <div class="col-12">
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
                     <div>
-                        <h1 class="h3 mb-1">注文履歴</h1>
+                        <h1 class="h3 mb-1">購入履歴</h1>
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb mb-0">
                                 <li class="breadcrumb-item"><a href="{% url 'item:item_list' %}">ホーム</a></li>
-                                <li class="breadcrumb-item active">注文履歴</li>
+                                <li class="breadcrumb-item active">購入履歴</li>
                             </ol>
                         </nav>
                     </div>
@@ -55,13 +55,13 @@
                         {% else %}
                             過去3ヶ月間
                         {% endif %}
-                        のご注文履歴を表示しています
+                        のご購入履歴を表示しています
                     </span>
                 </div>
             </div>
         </div>
 
-        <!-- 日付ごとの注文商品 -->
+        <!-- 日付ごとの購入商品 -->
         {% if orders_by_date %}
         {% for date, day_orders in orders_by_date.items %}
         <div class="mb-5">
@@ -70,15 +70,15 @@
                 <h4 class="mb-0 text-primary">{{ date|date:"Y年m月d日 (l)" }}</h4>
             </div>
 
-            <!-- その日の各注文 -->
+            <!-- その日の各購入 -->
             {% for order in day_orders %}
             <div class="bg-white border rounded mb-4">
-                <!-- 注文ヘッダー -->
+                <!-- 購入ヘッダー -->
                 <div class="border-bottom p-3">
                     <div class="row align-items-center">
                         <div class="col-md-3">
                             <div>
-                                <span class="text-muted small">注文日</span>
+                                <span class="text-muted small">購入日</span>
                                 <div class="fw-semibold">{{ order.created_at|date:"m月d日 H:i" }}</div>
                             </div>
                         </div>
@@ -96,18 +96,18 @@
                         </div>
                         <div class="col-md-2">
                             <div>
-                                <span class="text-muted small">注文番号</span>
+                                <span class="text-muted small">購入番号</span>
                                 <div class="fw-semibold">#{{ order.id }}</div>
                             </div>
                         </div>
                         <div class="col-md-2 text-md-end">
                             <a href="{% url 'order:order_detail' order.pk %}"
-                               class="btn btn-outline-primary btn-sm">注文詳細</a>
+                               class="btn btn-outline-primary btn-sm">購入詳細</a>
                         </div>
                     </div>
                 </div>
 
-                <!-- 注文商品一覧 -->
+                <!-- 購入商品一覧 -->
                 <div class="p-3">
                     {% for item in order.items.all %}
                     <div class="row align-items-center {% if not forloop.last %}pb-3 mb-3 border-bottom{% endif %}">
@@ -152,8 +152,8 @@
         {% else %}
         <div class="bg-white rounded p-5 text-center">
             <i class="bi bi-box-seam display-1 text-muted mb-4"></i>
-            <h4 class="mb-3">注文履歴がありません</h4>
-            <p class="text-muted mb-4">この期間に注文された商品はありません。期間を変更するか、新しい商品をご注文ください。</p>
+            <h4 class="mb-3">購入履歴がありません</h4>
+            <p class="text-muted mb-4">この期間に購入された商品はありません。期間を変更するか、新しい商品をご購入ください。</p>
             <a href="{% url 'item:item_list' %}" class="btn btn-primary btn-lg">
                 <i class="bi bi-shop me-2"></i>商品を見る
             </a>

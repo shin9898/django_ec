@@ -125,4 +125,18 @@ class OrderListView(ListView):
 
 @method_decorator(basic_auth_required, name='dispatch')
 class OrderDetailView(DetailView):
-    pass
+    model = Order
+    template_name = 'order/order_detail.html'
+    context_object_name = 'order'
+
+    def get_queryset(self):
+        """支払済み注文のみ表示"""
+        return Order.objects.filter(paid=True).prefetch_related(
+            Prefetch('items', queryset=OrderItem.objects.select_related('item'))
+        )
+
+    def get_context_data(self, **kwargs):
+        """追加のコンテキストデータ"""
+        context = super().get_context_data(**kwargs)
+        context['total_items'] = self.object.items.count()
+        return context

@@ -7,5 +7,5 @@ app_name = 'order'
 urlpatterns = [
     path('', CheckoutView.as_view(), name='checkout'),
     path('list/', OrderListView.as_view(), name='order_list'),
-    path('detail/<int:pk>', OrderDetailView.as_view(), name='order_detail'),
+    path('detail/<int:pk>/', OrderDetailView.as_view(), name='order_detail'),
 ]

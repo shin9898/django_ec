@@ -161,6 +161,23 @@ BASICAUTH_USERS= {
     env('BASICAUTH_USERNAME'): env('BASICAUTH_PASSWORD')
 }
 
+# メール設定（Gmail SMTP）
+if DEBUG:
+    # 開発環境：コンソール出力
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    DEFAULT_FROM_EMAIL = 'test@localhost.com'
+else:
+    # 本番環境：Gmail SMTP
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = 'smtp.gmail.com'
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
+    EMAIL_HOST_USER = os.environ.get('GMAIL_USER')
+    EMAIL_HOST_PASSWORD = os.environ.get('GMAIL_APP_PASSWORD')
+    DEFAULT_FROM_EMAIL = os.environ.get('GMAIL_USER')
+
+EMAIL_SUBJECT_PREFIX = '[Happiness Shop] '
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 

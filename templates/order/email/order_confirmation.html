@@ -36,7 +36,7 @@
             <h2>ご注文商品</h2>
             {% for item in order_items %}
             <div class="item">
-                <p><strong>{{ item.product.name }}</strong></p>
+                <p><strong>{{ item.item_name }}</strong></p>
                 <p>価格: ¥{{ item.item_price|floatformat:0 }} × {{ item.quantity }}個</p>
                 <p>小計: ¥{{ item.get_cost|floatformat:0 }}</p>
             </div>

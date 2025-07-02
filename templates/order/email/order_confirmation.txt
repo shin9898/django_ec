@@ -15,7 +15,7 @@
 【ご注文商品】
 {% for item in order_items %}
 ・{{ item.product.name }}
-  価格: ¥{{ item.price|floatformat:0 }} × {{ item.quantity }}個
+  価格: ¥{{ item.item_price|floatformat:0 }} × {{ item.quantity }}個
   小計: ¥{{ item.get_cost|floatformat:0 }}
 {% endfor %}
 

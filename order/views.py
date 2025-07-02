@@ -5,6 +5,7 @@ from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils import timezone
 from datetime import timedelta
+from django.db import transaction
 from django.db.models import Prefetch
 
 
@@ -48,6 +49,9 @@ class CheckoutView(CreateView):
 
     def form_valid(self, form):
         """フォーム送信成功時の処理"""
+        # 在庫チェック・更新
+        if not self.update_stock():
+            return self.form_invalid(form)
         # 注文を保存
         self.object = form.save(commit=False)
         self.object.paid = True
@@ -88,6 +92,27 @@ class CheckoutView(CreateView):
                 item_image=cart_item.item.image.url if cart_item.item.image else None,
                 quantity=cart_item.quantity
             )
+
+    def update_stock(self):
+        """在庫を更新する"""
+        try:
+            with transaction.atomic():
+                for cart_item in self.cart_items:
+                    product = cart_item.item
+                    quantity = cart_item.quantity
+                    product = product.__class__.objects.select_for_update().get(id=product.id)
+
+                    # 在庫チェック
+                    if product.stock < quantity:
+                        messages.error(self.request, f'{product.name}の在庫が不足しています。')
+                        return False
+                    # 在庫を減らす
+                    product.stock -= quantity
+                    product.save()
+            return True
+        except Exception as e:
+            messages.error(self.request, f"在庫更新中にエラーが発生しました: {str(e)}")
+            return False
 
 @method_decorator(basic_auth_required, name='dispatch')
 class OrderListView(ListView):

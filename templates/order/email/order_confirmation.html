@@ -1,0 +1,56 @@
+<!-- templates/order/email/order_confirmation.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>ご注文確認</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; }
+        .header { background-color: #f4f4f4; padding: 20px; text-align: center; }
+        .content { padding: 20px; }
+        .order-details { border: 1px solid #ddd; padding: 15px; margin: 20px 0; }
+        .item { border-bottom: 1px solid #eee; padding: 10px 0; }
+        .total { font-weight: bold; font-size: 1.2em; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>ご注文ありがとうございます</h1>
+    </div>
+
+    <div class="content">
+        <p>{{ order.email }} 様</p>
+
+        <p>この度は、Happiness Shopをご利用いただき、誠にありがとうございます。</p>
+
+        <div class="order-details">
+            <h2>注文詳細</h2>
+            <p><strong>注文番号:</strong> #{{ order.id }}</p>
+            <p><strong>注文日時:</strong> {{ order.created|date:"Y年m月d日 H:i" }}</p>
+            <p><strong>お名前:</strong> {{ order.first_name }} {{ order.last_name }}</p>
+            <p><strong>メールアドレス:</strong> {{ order.email }}</p>
+            <p><strong>住所:</strong> 〒{{ order.postal_code }} {{ order.address }}</p>
+        </div>
+
+        <div class="order-details">
+            <h2>ご注文商品</h2>
+            {% for item in order_items %}
+            <div class="item">
+                <p><strong>{{ item.item_name }}</strong></p>
+                <p>価格: ¥{{ item.item_price|floatformat:0 }} × {{ item.quantity }}個</p>
+                <p>小計: ¥{{ item.get_cost|floatformat:0 }}</p>
+            </div>
+            {% endfor %}
+
+            <div class="total">
+                <p>合計金額: ¥{{ order.get_total_cost|floatformat:0 }}</p>
+            </div>
+        </div>
+
+        <p>商品の発送準備ができ次第、別途ご連絡いたします。</p>
+        <p>ご不明な点がございましたら、お気軽にお問い合わせください。</p>
+
+        <p>今後ともHappiness Shopをよろしくお願いいたします。</p>
+    </div>
+</body>
+</html>

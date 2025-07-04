@@ -1,0 +1,30 @@
+{% comment %}templates/order/email/order_confirmation.txt{% endcomment %}
+ご注文ありがとうございます
+
+{{ order.email }} 様
+
+この度は、Happiness Shopをご利用いただき、誠にありがとうございます。
+
+【注文詳細】
+注文番号: #{{ order.id }}
+注文日時: {{ order.created|date:"Y年m月d日 H:i" }}
+お名前: {{ order.first_name }} {{ order.last_name }}
+メールアドレス: {{ order.email }}
+住所: 〒{{ order.postal_code }} {{ order.address }}
+
+【ご注文商品】
+{% for item in order_items %}
+・{{ item.item_name }}
+  価格: ¥{{ item.item_price|floatformat:0 }} × {{ item.quantity }}個
+  小計: ¥{{ item.get_cost|floatformat:0 }}
+{% endfor %}
+
+合計金額: ¥{{ order.get_total_cost|floatformat:0 }}
+
+商品の発送準備ができ次第、別途ご連絡いたします。
+ご不明な点がございましたら、お気軽にお問い合わせください。
+
+今後ともHappiness Shopをよろしくお願いいたします。
+
+--
+Happiness Shop

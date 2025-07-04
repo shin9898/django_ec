@@ -9,4 +9,5 @@ urlpatterns = [
     path('items/', include('item.urls')),
     path('', RedirectView.as_view(url='/items/', permanent=True)),  # ルートURLを/items/にリダイレクト
     path('cart/', include('cart.urls')),
+    path('check_out/', include('order.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

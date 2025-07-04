@@ -86,14 +86,17 @@
             </li>
             {% endif %}
           </ul>
-          <form class="card p-2">
+          <form class="card p-2" method="post" action="{% url 'promotion_code:apply' %}" novalidate>
+            {% csrf_token %}
             <div class="input-group">
               <input
                 type="text"
                 class="form-control"
-                placeholder="Promo code"
+                name="code"
+                placeholder="クーポンを入力(英数字7文字)"
+                style="font-size: 0.85em;"
               />
-              <button type="submit" class="btn btn-secondary">Redeem</button>
+              <button type="submit" class="btn btn-secondary">適用</button>
             </div>
           </form>
         </div>

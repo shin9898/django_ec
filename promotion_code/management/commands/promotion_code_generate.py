@@ -8,7 +8,7 @@ from promotion_code.models import PromotionCode
 class Command(BaseCommand):
     help = '10個のプロモーションコードを生成します。'
 
-    def handle(self):
+    def handle(self, *args, **kwargs):
         generated_codes = []
         attempts = 0
         max_attempts_per_code = 10

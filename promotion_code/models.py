@@ -46,6 +46,13 @@ class PromotionCode(models.Model):
         if not self.is_active:
             return False
 
+        used_count = self.order_promotion_codes.count()
+
+        if used_count >= self.max_uses:
+            return False
+
+        return True
+
 
 class OrderPromotionCode(models.Model):
     """

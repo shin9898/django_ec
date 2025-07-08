@@ -2,11 +2,11 @@ from django.views import View
 from django.views.generic import ListView
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from django.http import JsonResponse
 from django.urls import reverse
 
 from .models import Cart, CartItem
 from item.models import Item
+from order.forms import OrderForm
 
 # Create your views here.
 class CartListView(ListView):
@@ -41,9 +41,13 @@ class CartListView(ListView):
             except Cart.DoesNotExist:
                 context['total_price'] = 0
                 context['total_items_count'] = 0
+                context['cart'] = None
         else:
             context['total_price'] = 0
             context['total_items_count'] = 0
+            context['cart'] = None
+
+        context['form'] = OrderForm()
 
         return context
 

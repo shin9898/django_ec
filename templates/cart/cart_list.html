@@ -13,10 +13,9 @@
       <div class="py-5 text-center">
         <h1 class="h2">商品ご購入</h1>
       </div>
-      <!-- Messages Section -->
+
       {% include 'includes/messages.html' %}
 
-      <!-- Cart Section -->
       <div class="row g-5">
         <div class="col-md-5 col-lg-4 order-md-last">
           <h4 class="d-flex justify-content-between align-items-center mb-3">
@@ -54,7 +53,6 @@
                 </div>
               </div>
               <span class="text-body-secondary">小計: ¥ {{ cart_item.total_price|floatformat:0 }}</span>
-              <!-- 削除ボタン -->
               <div class="col-md-1 text-center">
                 <form method="post" action="{% url 'cart:remove_from_cart' cart_item.item.id %}"
                       onsubmit="return confirm('{{ cart_item.item.name }}をカートから削除しますか？');">
@@ -71,34 +69,35 @@
             </li>
             {% endfor %}
 
-            {% if cart_items %}
-            <li
-              class="list-group-item d-flex justify-content-between bg-body-tertiary"
-            >
+            {# ★ ここからプロモーションコード適用済み表示の修正 ★ #}
+            {% if cart.discount_amount > 0 %}
+            <li class="list-group-item d-flex justify-content-between bg-body-tertiary">
               <div class="text-success">
-                <h6 class="my-0">Promo code</h6>
-                <small>EXAMPLECODE</small>
+                <h6 class="my-0">クーポン適用済み</h6>
               </div>
-              <span class="text-success">−$5</span>
-            </li>
-            <li class="list-group-item d-flex justify-content-between">
-              <span>合計 (JPY)</span> <strong>¥{{ cart.total_price|default:0|floatformat:0 }}</strong>
+              <span class="text-success">− ¥{{ cart.discount_amount|floatformat:0 }}</span>
             </li>
             {% endif %}
+
+            <li class="list-group-item d-flex justify-content-between">
+              <span>合計 (JPY)</span>
+              <strong>¥{{ cart.total_price|default:0|floatformat:0 }}</strong>
+            </li>
           </ul>
-          <form class="card p-2" method="post" action="{% url 'promotion_code:apply' %}" novalidate>
+            {# ★ ここからプロモーションコード適用フォームの修正 ★ #}
+            <form class="card p-2" method="post" action="{% url 'promotion_code:apply' %}" novalidate>
             {% csrf_token %}
             <div class="input-group">
-              <input
+                <input
                 type="text"
                 class="form-control"
-                name="code"
+                name="promotion_code"
                 placeholder="クーポンを入力(英数字7文字)"
                 style="font-size: 0.85em;"
-              />
-              <button type="submit" class="btn btn-secondary">適用</button>
+                />
+                <button type="submit" class="btn btn-secondary">適用</button>
             </div>
-          </form>
+            </form>
         </div>
         <div class="col-md-7 col-lg-8">
           <h4 class="mb-3">お客様情報</h4>

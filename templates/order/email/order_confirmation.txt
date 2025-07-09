@@ -7,7 +7,7 @@
 
 【注文詳細】
 注文番号: #{{ order.id }}
-注文日時: {{ order.created|date:"Y年m月d日 H:i" }}
+注文日時: {{ order.created_at|date:"Y年m月d日 H:i" }}
 お名前: {{ order.first_name }} {{ order.last_name }}
 メールアドレス: {{ order.email }}
 住所: 〒{{ order.postal_code }} {{ order.address }}
@@ -22,9 +22,9 @@
 {% if order.get_discount_amount > 0 %}
   商品合計金額: ¥{{ order.get_total_cost|floatformat:0 }}
   割引金額: -¥{{ order.get_discount_amount }} | クーポンコード: {{ order.promotion_code.code }}
-  最終お支払い金額: ¥{{ order.total_price_after_discount }}
+  お支払い額: ¥{{ order.total_price_after_discount }}
 {% else %}
-  合計金額: ¥{{ order.get_total_cost|floatformat:0 }}
+  お支払い額: ¥{{ order.get_total_cost|floatformat:0 }}
 {% endif %}
 商品の発送準備ができ次第、別途ご連絡いたします。
 ご不明な点がございましたら、お気軽にお問い合わせください。

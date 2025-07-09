@@ -43,7 +43,13 @@
             {% endfor %}
 
             <div class="total">
-                <p>合計金額: ¥{{ order.get_total_cost|floatformat:0 }}</p>
+                {% if order.get_discount_amount > 0 %}
+                    <p>商品合計金額: ¥{{ order.get_total_cost|floatformat:0 }}</p>
+                    <p>クーポン割引額: -¥{{ order.get_discount_amount }} | クーポンコード: {{ order.promotion_code.code }}</p>
+                    <p>最終お支払い金額: ¥{{ order.total_price_after_discount }}</p>
+                {% else %}
+                    <p>最終お支払い金額: ¥{{ order.get_total_cost|floatformat:0 }}</p>
+                {% endif %}
             </div>
         </div>
 

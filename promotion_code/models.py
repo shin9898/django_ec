@@ -2,8 +2,6 @@ from django.db import models
 from django.core.exceptions import ValidationError
 import re
 
-from order.models import Order
-
 # Create your models here.
 class PromotionCode(models.Model):
     """
@@ -12,8 +10,8 @@ class PromotionCode(models.Model):
     # プロモーションコード情報
     code = models.CharField(max_length=7, unique=True, verbose_name='プロモーションコード')
     discount = models.IntegerField(default=100, verbose_name='割引額')
-    max_uses = models.IntegerField(default=1, verbose_name='最大使用回数') # 将来の拡張性を考慮して、max=1は設定せず
     is_active = models.BooleanField(default=True, verbose_name='有効フラグ')
+    is_used = models.BooleanField(default=False, verbose_name='使用済')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='作成日時')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='更新日時')
 
@@ -35,38 +33,8 @@ class PromotionCode(models.Model):
         if not (100 <= self.discount <= 1000):
             raise ValidationError({"discount": "割引額は100円以上1000円以下でなければなりません。"})
 
-        # max_usesが1であることを確認
-        if self.max_uses != 1:
-            raise ValidationError({"max_uses": "最大使用回数は1でなければなりません。"})
-
     def is_valid(self):
         """
         プロモーションコードが有効かどうかを確認するメソッド。
         """
-        if not self.is_active:
-            return False
-
-        used_count = self.order_promotion_codes.count()
-
-        if used_count >= self.max_uses:
-            return False
-
-        return True
-
-
-class OrderPromotionCode(models.Model):
-    """
-    注文とプロモーションコードの関連付けを管理する中間モデル。
-    """
-    promotion_code = models.ForeignKey(PromotionCode, on_delete=models.CASCADE, related_name='order_promotion_codes', verbose_name='プロモーションコード')
-    order = models.ForeignKey(Order, on_delete=models.PROTECT, verbose_name='注文')
-    used_count = models.IntegerField(default=0, verbose_name='使用回数')
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name='作成日時') # used_atとほぼ同義なので、created_atのみ定義
-
-
-    class Meta:
-        db_table = 'order_promotion_codes'
-        unique_together = ('promotion_code', 'order')
-
-    def __str__(self):
-        return f"OrderPromotionCode {self.promotion_code.code} for Order {self.order.id}"
+        return self.is_active and not self.is_used

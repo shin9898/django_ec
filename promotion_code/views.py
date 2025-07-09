@@ -25,50 +25,52 @@ class ApplyPromotionCodeView(View):
 
         if not code:
             messages.error(request, 'クーポンコードが入力されていません。')
-            return self._render_cart_list(request, customer_form)
+            return self._render_cart_list(request, customer_form, code)
 
         session_key = request.session.session_key
         if not session_key:
             messages.error(request, 'カート情報が見つかりません。セッションを再開してください。')
-            return self._render_cart_list(request, customer_form)
+            return self._render_cart_list(request, customer_form, code)
 
         try:
             cart = Cart.objects.get(session_key=session_key)
         except Cart.DoesNotExist:
             messages.error(request, 'カートが見つかりません。')
-            return self._render_cart_list(request, customer_form)
+            return self._render_cart_list(request, customer_form, code)
 
         try:
             promo_code_obj = PromotionCode.objects.get(code=code)
 
             if not promo_code_obj.is_valid():
                 messages.error(request, 'このクーポンは現在使用できません。')
-                return self._render_cart_list(request, customer_form)
+                return self._render_cart_list(request, customer_form, code)
 
             if cart.discount_amount > 0:
                 messages.warning(request, 'このカートには既にクーポンが適用されています。')
-                return self._render_cart_list(request, customer_form)
+                return self._render_cart_list(request, customer_form, code)
 
             with transaction.atomic():
                 cart.discount_amount = promo_code_obj.discount
                 cart.save()
                 messages.success(request, f"クーポンコード'{code}'が適用されました。{promo_code_obj.discount}円割引されます！")
 
-                return self._render_cart_list(request, customer_form)
+                return self._render_cart_list(request, customer_form, code)
         except PromotionCode.DoesNotExist:
             messages.error(request, '入力されたクーポンコードが見つかりません。')
-            return self._render_cart_list(request, customer_form)
+            return self._render_cart_list(request, customer_form, code)
         except Exception as e:
             messages.error(request, f"エラーが発生しました: {str(e)}")
-            return self._render_cart_list(request, customer_form)
+            return self._render_cart_list(request, customer_form, code)
 
     def get(self, request, *args, **kwargs):
         return redirect('cart:cart_list')
 
-    def _render_cart_list(self, request, customer_form=None):
+    def _render_cart_list(self, request, customer_form=None, code=None):
         session_key = request.session.session_key
         cart = None
         cart_items = []
+        if code:
+            request.session['promotion_code'] = code
         if session_key:
             try:
                 cart = Cart.objects.prefetch_related('cart_items__item').get(session_key=session_key)
@@ -80,5 +82,6 @@ class ApplyPromotionCodeView(View):
             'cart': cart,
             'cart_items': cart_items,
             'form': customer_form,
+            'promotion_code': code or request.session.get('promotion_code', '')
         }
         return render(request, 'cart/cart_list.html', context)

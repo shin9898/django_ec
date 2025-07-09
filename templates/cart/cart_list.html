@@ -93,6 +93,7 @@
                 class="form-control"
                 name="promotion_code"
                 placeholder="クーポンを入力(英数字7文字)"
+                value="{{ promotion_code|default:'' }}"
                 style="font-size: 0.85em;"
                 />
                 <button type="submit" class="btn btn-secondary">適用</button>

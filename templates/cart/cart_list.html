@@ -69,7 +69,6 @@
             </li>
             {% endfor %}
 
-            {# ★ ここからプロモーションコード適用済み表示の修正 ★ #}
             {% if cart.discount_amount > 0 %}
             <li class="list-group-item d-flex justify-content-between bg-body-tertiary">
               <div class="text-success">
@@ -84,7 +83,6 @@
               <strong>¥{{ cart.total_price|default:0|floatformat:0 }}</strong>
             </li>
           </ul>
-            {# ★ ここからプロモーションコード適用フォームの修正 ★ #}
             <form class="card p-2" method="post" action="{% url 'promotion_code:apply' %}" novalidate>
             {% csrf_token %}
             <div class="input-group">

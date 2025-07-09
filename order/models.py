@@ -63,6 +63,9 @@ class Order(models.Model):
             address_parts.append(self.address_line2)
         return ' '.join(address_parts)
 
+    def items_count(self):
+        pass
+
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE, verbose_name='注文')
     item = models.ForeignKey(Item, on_delete=models.PROTECT, verbose_name='商品')

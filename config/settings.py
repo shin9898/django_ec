@@ -17,7 +17,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = environ.Env(
-    DEBUG=(bool, False), # DEBUGはデフォルトでFalse
+    DEBUG=(bool, False),
 )
 
 if not os.environ.get('DYNO'):
@@ -32,18 +32,19 @@ SECRET_KEY = env("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool("DEBUG", default=False)
 
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-
-SESSION_COOKIE_SECURE = True
-
 CSRF_COOKIE_SECURE = env.bool('CSRF_COOKIE_SECURE')
 
-# CSRF_COOKIE_SECUREをTrueに設定して、HTTPS接続でのみCSRFトークンを送信する
 CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS')
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=['127.0.0.1', 'localhost'])
 
-if not DEBUG:
+if not DEBUG: # 本番環境
+    # ==== セキュリティ設定 ====
+    SECURE_SSL_REDIRECT = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SESSION_COOKIE_SECURE = True
+
+    # ==== メディア設定（Cloudinary） ====
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
     CLOUDINARY_STORAGE  = {
         'CLOUD_NAME':env('CLOUDINARY_CLOUD_NAME'),
@@ -51,17 +52,38 @@ if not DEBUG:
         'API_SECRET': env('CLOUDINARY_API_SECRET'),
     }
 
+    # ==== メール設定 ====
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = 'smtp-relay.brevo.com'
+    EMAIL_PORT = 587
+    EMAIL_USE_TLS = True
+    EMAIL_HOST_USER = os.environ.get('BREVO_LOGIN')
+    EMAIL_HOST_PASSWORD = os.environ.get('BREVO_SMTP_KEY')
+    DEFAULT_FROM_EMAIL = os.environ.get('BREVO_EMAIL')
+else: # ローカル環境
+    # ==== セキュリティ設定 ====
+    SESSION_COOKIE_SECURE = False
+
+    # ==== メール設定 ====
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    DEFAULT_FROM_EMAIL = 'test@localhost.com'
+
+EMAIL_SUBJECT_PREFIX = '[Happiness Shop]'
+
 # Application definition
 
 INSTALLED_APPS = [
+    # 標準アプリ (django.contrib)
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # サードパーティ
     'cloudinary_storage',
     'cloudinary',
+    # 自作アプリ
     'item',
     'cart',
     'order',
@@ -70,7 +92,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware', # 静的ファイルのホスティングをWhitenoiseで行う
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -144,15 +166,15 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles') # 本番環境で collectstatic がファイルを収集する場所
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'), # 開発環境での静的ファイルのディレクトリ
+    os.path.join(BASE_DIR, 'static'),
 ]
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage' # Whitenoiseを使用して静的ファイルを圧縮
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = '/media/'
 
@@ -161,24 +183,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 BASICAUTH_USERS= {
     env('BASICAUTH_USERNAME'): env('BASICAUTH_PASSWORD')
 }
-
-# メール設定
-if DEBUG:
-    # 開発環境：コンソール出力
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-    DEFAULT_FROM_EMAIL = 'test@localhost.com'
-else:
-    # 本番環境：Brevo SMTP
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-    EMAIL_HOST = 'smtp-relay.brevo.com'
-    EMAIL_PORT = 587
-    EMAIL_USE_TLS = True
-    EMAIL_HOST_USER = os.environ.get('BREVO_LOGIN')
-    EMAIL_HOST_PASSWORD = os.environ.get('BREVO_SMTP_KEY')
-    DEFAULT_FROM_EMAIL = os.environ.get('BREVO_EMAIL')
-
-EMAIL_SUBJECT_PREFIX = '[Happiness Shop]'
-
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

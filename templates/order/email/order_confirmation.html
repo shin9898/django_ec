@@ -10,6 +10,7 @@
         .content { padding: 20px; }
         .order-details { border: 1px solid #ddd; padding: 15px; margin: 20px 0; }
         .item { border-bottom: 1px solid #eee; padding: 10px 0; }
+        .coupon { border-bottom: 1px solid #eee; padding: 10px 0; }
         .total { font-weight: bold; font-size: 1.2em; }
     </style>
 </head>
@@ -26,7 +27,7 @@
         <div class="order-details">
             <h2>注文詳細</h2>
             <p><strong>注文番号:</strong> #{{ order.id }}</p>
-            <p><strong>注文日時:</strong> {{ order.created|date:"Y年m月d日 H:i" }}</p>
+            <p><strong>注文日時:</strong> {{ order.created_at|date:"Y年m月d日 H:i" }}</p>
             <p><strong>お名前:</strong> {{ order.first_name }} {{ order.last_name }}</p>
             <p><strong>メールアドレス:</strong> {{ order.email }}</p>
             <p><strong>住所:</strong> 〒{{ order.postal_code }} {{ order.address }}</p>
@@ -42,8 +43,19 @@
             </div>
             {% endfor %}
 
+            {% if order.promotion_code.code %}
+            <div class="coupon">
+                <p>使用クーポンコード: {{ order.promotion_code.code }}</p>
+                <p>クーポン割引額: -¥{{ order.get_discount_amount }}</p>
+            </div>
+            {% endif %}
+
             <div class="total">
-                <p>合計金額: ¥{{ order.get_total_cost|floatformat:0 }}</p>
+                {% if order.get_discount_amount > 0 %}
+                <p>お支払い額: ¥{{ order.total_price_after_discount }}</p>
+                {% else %}
+                <p>お支払い額: ¥{{ order.get_total_cost|floatformat:0 }}</p>
+                {% endif %}
             </div>
         </div>
 

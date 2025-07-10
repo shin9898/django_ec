@@ -76,7 +76,7 @@
                 <!-- 購入ヘッダー -->
                 <div class="border-bottom p-3">
                     <div class="row align-items-center">
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <div>
                                 <span class="text-muted small">購入日</span>
                                 <div class="fw-semibold">{{ order.created_at|date:"m月d日 H:i" }}</div>
@@ -84,23 +84,35 @@
                         </div>
                         <div class="col-md-2">
                             <div>
-                                <span class="text-muted small">合計</span>
+                                <span class="text-muted small">商品合計金額</span>
                                 <div class="fw-semibold">¥{{ order.get_total_cost|floatformat:0 }}</div>
                             </div>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-2">
+                            <div>
+                                <span class="text-muted small">クーポン割引額</span>
+                                <div class="fw-semibold text-success">-¥{{ order.get_discount_amount|floatformat:0 }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div>
+                                <span class="text-muted small">お支払い金額</span>
+                                <div class="fw-semibold">¥{{ order.total_price_after_discount|floatformat:0 }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
                             <div>
                                 <span class="text-muted small">配送先</span>
                                 <div class="fw-semibold">{{ order.last_name }} {{ order.first_name }}</div>
                             </div>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-md-1">
                             <div>
                                 <span class="text-muted small">購入番号</span>
                                 <div class="fw-semibold">#{{ order.id }}</div>
                             </div>
                         </div>
-                        <div class="col-md-2 text-md-end">
+                        <div class="col-md-1 text-md-end">
                             <a href="{% url 'order:order_detail' order.pk %}"
                                class="btn btn-outline-primary btn-sm">購入詳細</a>
                         </div>
@@ -133,7 +145,7 @@
                             </div>
                         </div>
                         <div class="col-md-2 text-md-center mt-2 mt-md-0">
-                            <div class="fw-bold text-success">¥{{ item.get_cost|floatformat:0 }}</div>
+                            <div class="fw-bold text-dark">¥{{ item.get_cost|floatformat:0 }}</div>
                         </div>
                     </div>
                     {% endfor %}

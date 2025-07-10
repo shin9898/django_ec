@@ -12,7 +12,7 @@ from django.db.models import Prefetch
 from basicauth.decorators import basic_auth_required
 from cart.models import Cart
 from .forms import OrderForm
-from .models import Order, OrderItem
+from .models import Order, OrderItem, PromotionCode
 from .utils import send_order_confirmation_email
 
 # Create your views here.
@@ -55,6 +55,17 @@ class CheckoutView(CreateView):
         # 注文を保存
         self.object = form.save(commit=False)
         self.object.paid = True
+
+        promotion_code_str = self.request.session.get('promotion_code')
+        if promotion_code_str:
+            try:
+                promo = PromotionCode.objects.get(code=promotion_code_str, is_active=True, is_used=False)
+                self.object.promotion_code = promo
+                promo.is_used = True
+                promo.save()
+            except PromotionCode.DoesNotExist:
+                messages.warning(self.request, "クーポンコードが無効またはすでに使用されているか、存在しないコードです。")
+
         self.object.save()
 
         # 注文アイテム作成 (Snapshotパターン)

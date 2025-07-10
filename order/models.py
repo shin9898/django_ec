@@ -1,6 +1,7 @@
 from django.db import models
 
 from item.models import Item
+from promotion_code.models import PromotionCode
 
 # Create your models here.
 class Order(models.Model):
@@ -27,6 +28,7 @@ class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='注文日時')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='更新日時')
     paid = models.BooleanField(default=False, verbose_name='支払済み')
+    promotion_code = models.OneToOneField(PromotionCode, null=True, blank=True, on_delete=models.PROTECT, verbose_name='プロモーションコード')
 
     class Meta:
         db_table = 'orders'
@@ -36,8 +38,20 @@ class Order(models.Model):
         return f"Order {self.id}"
 
     def get_total_cost(self):
-        """注文の合計額を計算"""
+        """割引前の商品合計額を計算"""
         return sum(item.get_cost() for item in self.items.all())
+
+    def get_discount_amount(self):
+        """割引額の取得"""
+        if self.promotion_code:
+            return self.promotion_code.discount
+        return 0
+
+    def total_price_after_discount(self):
+        """最終支払い額を計算して返す"""
+        if self.get_total_cost() <= self.get_discount_amount():
+            return 0
+        return self.get_total_cost() - self.get_discount_amount()
 
     def get_full_address(self):
         """完全な住所を取得"""
@@ -51,6 +65,7 @@ class Order(models.Model):
             address_parts.append(self.address_line2)
         return ' '.join(address_parts)
 
+
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE, verbose_name='注文')
     item = models.ForeignKey(Item, on_delete=models.PROTECT, verbose_name='商品')
@@ -58,7 +73,7 @@ class OrderItem(models.Model):
     # 購入時の商品情報 (Snapshot)
     item_name = models.CharField(max_length=200, verbose_name='商品名')
     item_description = models.TextField(blank=True, null=True, verbose_name='商品説明')
-    item_price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='商品価格')
+    item_price = models.IntegerField(verbose_name='商品価格')
     item_image = models.URLField(blank=True, null=True, verbose_name='商品画像URL')
 
     # 注文情報

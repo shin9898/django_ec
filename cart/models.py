@@ -4,7 +4,8 @@ from item.models import Item
 
 # Create your models here.
 class Cart(models.Model):
-    session_key = models.CharField(max_length=40, unique=True)
+    session_key = models.CharField(max_length=40, unique=True, verbose_name='セッションキー')
+    discount_amount = models.IntegerField(default=0, verbose_name='割引額')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -22,7 +23,13 @@ class Cart(models.Model):
 
     @property
     def total_price(self):
-        """カート内の総価格"""
+        """カート内の総価格(割引適用後)"""
+        items_total = sum(item.total_price for item in self.cart_items.all())
+        return max(0, items_total - self.discount_amount)
+
+    @property
+    def original_total_price(self):
+        """カート内の総価格(割引適用前)"""
         return sum(item.total_price for item in self.cart_items.all())
 
 class CartItem(models.Model):

@@ -14,11 +14,11 @@ class ItemListView(ListView):
     model = Item
     template_name = 'item/item_list.html'
     context_object_name = 'items'
-    paginate_by = 20  # 1ページあたりのアイテム数
+    paginate_by = 20
 
     def get_queryset(self):
-        queryset = super().get_queryset() # デフォルトのクエリセット（全商品）を取得
-        queryset = queryset.filter(is_published=True).order_by('-created_at') # 公開中かつ新しい順にフィルタ
+        queryset = super().get_queryset()
+        queryset = queryset.filter(is_published=True).order_by('-created_at')
         return queryset
 
 
@@ -113,7 +113,6 @@ class ManageItemDeleteView(DeleteView):
         # 削除対象のオブジェクトを取得
         self.object = self.get_object()
         # 削除前に商品名を保存
-        # 削除後はself.objectにアクセスできないため事前保存が必要
         item_name = self.object.name
         # 親クラス(DeleteView)の削除処理を実行
         response = super().delete(request, *args, **kwargs)

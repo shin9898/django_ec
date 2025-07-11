@@ -1,7 +1,7 @@
 <!-- item/manage_item_form.html -->
 {% extends "base.html" %}
 {% block title %}
-    {% if object %}商品編集{% else %}商品作成{% endif %} - Happiness Shop
+    {% if action == 'create' %}{{ title }}{% else %}{{ title }}{% endif %} - Happiness Shop
 {% endblock %}
 
 {% block content %}
@@ -11,7 +11,7 @@
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{% url 'item:manage_item_list' %}">商品管理</a></li>
             <li class="breadcrumb-item active">
-                {% if object %}{{ object.name }} の編集{% else %}新規作成{% endif %}
+                {% if action == 'create' %}{{ title }}{% else %}{{ object.name }} の編集{% endif %}
             </li>
         </ol>
     </nav>
@@ -22,10 +22,10 @@
             <div class="card shadow">
                 <div class="card-header bg-primary text-white">
                     <h3 class="card-title mb-0">
-                        {% if object %}
-                            <i class="bi bi-pencil me-2"></i>商品編集
+                        {% if action == 'create' %}
+                            <i class="bi bi-plus-circle me-2"></i>{{ title }}
                         {% else %}
-                            <i class="bi bi-plus-circle me-2"></i>商品作成
+                            <i class="bi bi-pencil me-2"></i>{{ title }}
                         {% endif %}
                     </h3>
                 </div>
@@ -162,10 +162,10 @@
                         <!-- ボタン -->
                         <div class="d-flex gap-2">
                             <button type="submit" class="btn btn-primary">
-                                {% if object %}
-                                    <i class="bi bi-check-circle me-1"></i>更新する
-                                {% else %}
+                                {% if action == 'create' %}
                                     <i class="bi bi-plus-circle me-1"></i>作成する
+                                {% else %}
+                                    <i class="bi bi-check-circle me-1"></i>更新する
                                 {% endif %}
                             </button>
                             <a href="{% url 'item:manage_item_list' %}" class="btn btn-secondary">

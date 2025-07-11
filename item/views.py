@@ -46,6 +46,7 @@ class ItemDetailView(DetailView):
         context['related_items'] = related_items
         return context
 
+
 @method_decorator(basic_auth_required, name='dispatch')
 class ManageItemListView(ListView):
     model = Item
@@ -75,11 +76,12 @@ class ManageItemListView(ListView):
 
         return context
 
+
 @method_decorator(basic_auth_required, name='dispatch')
 class ManageItemCreateView(CreateView):
     model = Item
+    form_class = ItemForm
     template_name = 'item/manage_item_form.html'
-    fields = ['name', 'description', 'price', 'stock', 'sku', 'image', 'is_published']
     success_url = reverse_lazy('item:manage_item_list')
 
     def get_context_data(self, **kwargs):
@@ -88,11 +90,12 @@ class ManageItemCreateView(CreateView):
         context['title'] = '商品作成'
         return context
 
+
 @method_decorator(basic_auth_required, name='dispatch')
 class ManageItemUpdateView(UpdateView):
     model = Item
+    form_class = ItemForm
     template_name = 'item/manage_item_form.html'
-    fields = ['name', 'description', 'price', 'stock', 'sku', 'image', 'is_published']
     success_url = reverse_lazy('item:manage_item_list')
 
     def get_context_data(self, **kwargs):
@@ -100,6 +103,7 @@ class ManageItemUpdateView(UpdateView):
         context['action'] = 'update'
         context['title'] = '商品更新'
         return context
+
 
 @method_decorator(basic_auth_required, name='dispatch')
 class ManageItemDeleteView(DeleteView):

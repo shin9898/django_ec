@@ -50,45 +50,53 @@ class CheckoutView(CreateView):
 
     def form_valid(self, form):
         """フォーム送信成功時の処理"""
-        # 在庫チェック・更新
         if not self.update_stock():
             return self.form_invalid(form)
-        # 注文を保存
+
         try:
             with transaction.atomic():
-                self.object = form.save(commit=False)
-                self.object.paid = True
-
-                promotion_code_str = self.request.session.get('promotion_code')
-                if promotion_code_str:
-                    try:
-                        promo = PromotionCode.objects.get(code=promotion_code_str, is_active=True, is_used=False)
-                        self.object.promotion_code = promo
-                        promo.is_used = True
-                        promo.save()
-                    except PromotionCode.DoesNotExist:
-                        messages.warning(self.request, "クーポンコードが無効またはすでに使用されているか、存在しないコードです。")
-                self.object.save()
-                # 注文アイテム作成 (Snapshotパターン)
+                self.save_order(form)
                 self.create_order_items()
         except Exception as e:
             messages.error(self.request, f"注文処理中にエラーが発生しました: {str(e)}")
             return self.form_invalid(form)
 
-        # メール送信処理
+        self.finalize_checkout()
+        return super().form_valid(form)
+
+    def save_order(self, form):
+        self.object = form.save(commit=False)
+        self.object.paid = True
+        self.apply_promotion_code()
+        self.object.save()
+
+    def apply_promotion_code(self):
+        # プロモーションコードが空の場合は処理しない
+        code = (self.request.session.get('promotion_code') or '').strip()
+        print(code)
+        if not code:
+            return
+
+        if code:
+            try:
+                promo = PromotionCode.objects.get(code=code, is_active=True, is_used=False)
+                self.object.promotion_code = promo
+                promo.is_used = True
+                promo.save()
+            except PromotionCode.DoesNotExist:
+                messages.warning(self.request, 'クーポンコードが無効またはすでに使用されています。')
+
+    def finalize_checkout(self):
         email_sent = send_order_confirmation_email(self.object)
-
-        # カート削除
         self.cart.delete()
+        if 'promotion_code' in self.request.session:
+            del self.request.session['promotion_code']
 
-        # メール送信結果に応じたメッセージ表示
         if email_sent:
             messages.success(self.request, 'ご購入ありがとうございます。確認メールをお送りしました。')
         else:
-            messages.success(self.request, '購入ありがとうございます。')
-            messages.warning(self.request, 'メール送信でエラーが発生しました。お問い合わせください。')
-
-        return super().form_valid(form)
+            messages.success(self.request, 'ご購入ありがとうございます。')
+            messages.warning(self.request, 'メール送信でエラーが発生しました。')
 
     def form_invalid(self, form):
         """フォームにエラーがある場合の処理"""

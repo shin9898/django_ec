@@ -39,22 +39,22 @@
             <div class="item">
                 <p><strong>{{ item.item_name }}</strong></p>
                 <p>価格: ¥{{ item.item_price|floatformat:0 }} × {{ item.quantity }}個</p>
-                <p>小計: ¥{{ item.get_cost|floatformat:0 }}</p>
+                <p>小計: ¥{{ item.cost|floatformat:0 }}</p>
             </div>
             {% endfor %}
 
             {% if order.promotion_code.code %}
             <div class="coupon">
                 <p>使用クーポンコード: {{ order.promotion_code.code }}</p>
-                <p>クーポン割引額: -¥{{ order.get_discount_amount }}</p>
+                <p>クーポン割引額: -¥{{ order.discount_amount }}</p>
             </div>
             {% endif %}
 
             <div class="total">
                 {% if order.get_discount_amount > 0 %}
-                <p>お支払い額: ¥{{ order.get_total_price_after_discount }}</p>
+                <p>お支払い額: ¥{{ order.total_price_after_discount }}</p>
                 {% else %}
-                <p>お支払い額: ¥{{ order.get_total_cost|floatformat:0 }}</p>
+                <p>お支払い額: ¥{{ order.total_cost|floatformat:0 }}</p>
                 {% endif %}
             </div>
         </div>

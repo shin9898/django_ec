@@ -16,15 +16,15 @@
 {% for item in order_items %}
 ・{{ item.item_name }}
   価格: ¥{{ item.item_price|floatformat:0 }} × {{ item.quantity }}個
-  小計: ¥{{ item.get_cost|floatformat:0 }}
+  小計: ¥{{ item.cost|floatformat:0 }}
 {% endfor %}
 
 {% if order.get_discount_amount > 0 %}
-  商品合計金額: ¥{{ order.get_total_cost|floatformat:0 }}
-  割引金額: -¥{{ order.get_discount_amount }} | クーポンコード: {{ order.promotion_code.code }}
-  お支払い額: ¥{{ order.get_total_price_after_discount }}
+  商品合計金額: ¥{{ order.total_cost|floatformat:0 }}
+  割引金額: -¥{{ order.discount_amount }} | クーポンコード: {{ order.promotion_code.code }}
+  お支払い額: ¥{{ order.total_price_after_discount }}
 {% else %}
-  お支払い額: ¥{{ order.get_total_cost|floatformat:0 }}
+  お支払い額: ¥{{ order.total_cost|floatformat:0 }}
 {% endif %}
 商品の発送準備ができ次第、別途ご連絡いたします。
 ご不明な点がございましたら、お気軽にお問い合わせください。

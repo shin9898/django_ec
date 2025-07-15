@@ -1,8 +1,7 @@
 from django.views import View
 from django.views.generic import ListView
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import redirect, get_object_or_404
 from django.contrib import messages
-from django.urls import reverse
 
 from .models import Cart, CartItem
 from item.models import Item

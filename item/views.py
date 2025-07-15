@@ -54,8 +54,8 @@ class ManageItemListView(ListView):
     context_object_name = 'items'
 
     def get_queryset(self):
-        queryset = super().get_queryset()  # デフォルトのクエリセット（全商品）を取得
-        return queryset.order_by('-created_at')  # 新しい順に並べ替え
+        queryset = super().get_queryset()
+        return queryset.order_by('-created_at')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

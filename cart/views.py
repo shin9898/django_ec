@@ -34,9 +34,9 @@ class CartListView(ListView):
         if session_key:
             try:
                 cart = Cart.objects.get(session_key=session_key)
-                context['total_price'] = cart.total_price  # @propertyを呼び出し
+                context['total_price'] = cart.total_price  # @property
                 context['cart'] = cart
-                context['total_items_count'] = cart.total_items_count
+                context['total_items_count'] = cart.total_items_count # @property
             except Cart.DoesNotExist:
                 context['total_price'] = 0
                 context['total_items_count'] = 0

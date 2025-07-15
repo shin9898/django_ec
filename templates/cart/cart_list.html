@@ -1,6 +1,8 @@
 {% extends "base.html" %}
+
 {% load static %}
 {% load cart_tags %}
+{% load custom_filters %}
 
 {% block head %}
 <link rel="stylesheet" href="{% static 'cart/css/checkout.css' %}">
@@ -36,16 +38,10 @@
                     <form method="post" action="{% url 'cart:update_cart' cart_item.item.id %}" class="d-inline">
                         {% csrf_token %}
                         <small class="text-muted">
-                            <select name="quantity"
-                                    style="border:none; background:transparent; color:#6c757d; font-size:inherit; padding:0; cursor:pointer; width:auto;"
-                                    onchange="this.form.submit();">
+                            <select name="quantity" onchange="this.form.submit();">
                                 <option value="0" {% if cart_item.quantity == 0 %}selected{% endif %}>0</option>
-                                {% for i in "123456789012345678901234567890"|make_list %}
-                                    {% if forloop.counter <= cart_item.item.stock %}
-                                        <option value="{{ forloop.counter }}" {% if cart_item.quantity == forloop.counter %}selected{% endif %}>
-                                            {{ forloop.counter }}
-                                        </option>
-                                    {% endif %}
+                                {% for i in cart_item.item.stock|times %}
+                                  <option value="{{ i }}" {% if cart_item.quantity == i %}selected{% endif %}>{{ i }}</option>
                                 {% endfor %}
                             </select>
                         </small>

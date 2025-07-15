@@ -137,16 +137,14 @@ class OrderListView(ListView):
         period = self.request.GET.get('period', '3months')
 
         # 期間に応じた日数を設定
-        if period == '1month':
-            days = 30
-        elif period == '6months':
-            days = 180
-        elif period == '1year':
-            days = 365
-        elif period == 'all':
-            days = None
-        else:  # 3months (デフォルト)
-            days = 90
+        period_map = {
+            '1month': 30,
+            '3months': 90,
+            '6months': 180,
+            '1year': 365,
+            'all': None,
+        }
+        days = period_map.get(self.request.GET.get('period', '3months'))
 
         # クエリセットを構築
         queryset = Order.objects.filter(paid=True)

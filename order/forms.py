@@ -24,7 +24,6 @@ class OrderForm(forms.ModelForm):
         """郵便番号のバリデーション"""
         postal_code = self.cleaned_data.get('postal_code')
         if postal_code:
-            # ハイフンを削除して数字のみに変換する
             cleaned = postal_code.replace('-', '')
             if not cleaned.isdigit() or len(cleaned) != 7:
                 raise forms.ValidationError('郵便番号は123-4567の形式で入力してください')
@@ -35,7 +34,6 @@ class OrderForm(forms.ModelForm):
         """カード番号のバリデーション"""
         card_number = self.cleaned_data.get('card_number')
         if card_number:
-            # スペース・ハイフンを削除
             cleaned = card_number.replace(' ', '').replace('-', '')
             if not cleaned.isdigit() or len(cleaned) not in [15, 16]:
                 raise forms.ValidationError('カード番号は15桁または16桁の数字で入力してください')

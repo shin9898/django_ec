@@ -22,7 +22,7 @@
 {% if order.get_discount_amount > 0 %}
   商品合計金額: ¥{{ order.get_total_cost|floatformat:0 }}
   割引金額: -¥{{ order.get_discount_amount }} | クーポンコード: {{ order.promotion_code.code }}
-  お支払い額: ¥{{ order.total_price_after_discount }}
+  お支払い額: ¥{{ order.get_total_price_after_discount }}
 {% else %}
   お支払い額: ¥{{ order.get_total_cost|floatformat:0 }}
 {% endif %}

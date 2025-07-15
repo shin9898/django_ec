@@ -160,7 +160,7 @@ order.id }}{% endblock %} {% block content %}
           <div class="d-flex justify-content-between">
             <span class="fw-bold">お支払い金額</span>
             <span class="fw-bold text-success fs-5"
-              >¥{{ order.total_price_after_discount|floatformat:0 }}</span
+              >¥{{ order.get_total_price_after_discount|floatformat:0 }}</span
             >
           </div>
         </div>

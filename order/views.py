@@ -10,6 +10,7 @@ from django.db.models import Prefetch
 
 
 from basicauth.decorators import basic_auth_required
+
 from cart.models import Cart
 from .forms import OrderForm
 from .models import Order, OrderItem, PromotionCode

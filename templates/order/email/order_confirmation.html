@@ -52,7 +52,7 @@
 
             <div class="total">
                 {% if order.get_discount_amount > 0 %}
-                <p>お支払い額: ¥{{ order.total_price_after_discount }}</p>
+                <p>お支払い額: ¥{{ order.get_total_price_after_discount }}</p>
                 {% else %}
                 <p>お支払い額: ¥{{ order.get_total_cost|floatformat:0 }}</p>
                 {% endif %}

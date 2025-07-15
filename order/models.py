@@ -47,7 +47,7 @@ class Order(models.Model):
             return self.promotion_code.discount
         return 0
 
-    def total_price_after_discount(self):
+    def get_total_price_after_discount(self):
         """最終支払い額を計算して返す"""
         if self.get_total_cost() <= self.get_discount_amount():
             return 0

@@ -10,6 +10,7 @@ from django.db.models import Prefetch
 
 
 from basicauth.decorators import basic_auth_required
+
 from cart.models import Cart
 from .forms import OrderForm
 from .models import Order, OrderItem, PromotionCode
@@ -49,42 +50,53 @@ class CheckoutView(CreateView):
 
     def form_valid(self, form):
         """フォーム送信成功時の処理"""
-        # 在庫チェック・更新
         if not self.update_stock():
             return self.form_invalid(form)
-        # 注文を保存
+
+        try:
+            with transaction.atomic():
+                self.save_order(form)
+                self.create_order_items()
+        except Exception as e:
+            messages.error(self.request, f"注文処理中にエラーが発生しました: {str(e)}")
+            return self.form_invalid(form)
+
+        self.finalize_checkout()
+        return super().form_valid(form)
+
+    def save_order(self, form):
         self.object = form.save(commit=False)
         self.object.paid = True
+        self.apply_promotion_code()
+        self.object.save()
 
-        promotion_code_str = self.request.session.get('promotion_code')
-        if promotion_code_str:
+    def apply_promotion_code(self):
+        # プロモーションコードが空の場合は処理しない
+        code = (self.request.session.get('promotion_code') or '').strip()
+        print(code)
+        if not code:
+            return
+
+        if code:
             try:
-                promo = PromotionCode.objects.get(code=promotion_code_str, is_active=True, is_used=False)
+                promo = PromotionCode.objects.get(code=code, is_active=True, is_used=False)
                 self.object.promotion_code = promo
                 promo.is_used = True
                 promo.save()
             except PromotionCode.DoesNotExist:
-                messages.warning(self.request, "クーポンコードが無効またはすでに使用されているか、存在しないコードです。")
+                messages.warning(self.request, 'クーポンコードが無効またはすでに使用されています。')
 
-        self.object.save()
-
-        # 注文アイテム作成 (Snapshotパターン)
-        self.create_order_items()
-
-        # メール送信処理
+    def finalize_checkout(self):
         email_sent = send_order_confirmation_email(self.object)
-
-        # カート削除
         self.cart.delete()
+        if 'promotion_code' in self.request.session:
+            del self.request.session['promotion_code']
 
-        # メール送信結果に応じたメッセージ表示
         if email_sent:
             messages.success(self.request, 'ご購入ありがとうございます。確認メールをお送りしました。')
         else:
-            messages.success(self.request, '購入ありがとうございます。')
-            messages.warning(self.request, 'メール送信でエラーが発生しました。お問い合わせください。')
-
-        return super().form_valid(form)
+            messages.success(self.request, 'ご購入ありがとうございます。')
+            messages.warning(self.request, 'メール送信でエラーが発生しました。')
 
     def form_invalid(self, form):
         """フォームにエラーがある場合の処理"""
@@ -132,20 +144,15 @@ class OrderListView(ListView):
     context_object_name = 'orders'
 
     def get_queryset(self):
-        # URLパラメータから期間を取得
-        period = self.request.GET.get('period', '3months')
-
-        # 期間に応じた日数を設定
-        if period == '1month':
-            days = 30
-        elif period == '6months':
-            days = 180
-        elif period == '1year':
-            days = 365
-        elif period == 'all':
-            days = None
-        else:  # 3months (デフォルト)
-            days = 90
+        period_map = {
+            '1month': 30,
+            '3months': 90,
+            '6months': 180,
+            '1year': 365,
+            'all': None,
+        }
+        # GETパラメータ 'period' から表示期間（デフォルト: 過去3ヶ月）を取得
+        days = period_map.get(self.request.GET.get('period', '3months'))
 
         # クエリセットを構築
         queryset = Order.objects.filter(paid=True)

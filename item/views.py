@@ -14,11 +14,11 @@ class ItemListView(ListView):
     model = Item
     template_name = 'item/item_list.html'
     context_object_name = 'items'
-    paginate_by = 20  # 1ページあたりのアイテム数
+    paginate_by = 20
 
     def get_queryset(self):
-        queryset = super().get_queryset() # デフォルトのクエリセット（全商品）を取得
-        queryset = queryset.filter(is_published=True).order_by('-created_at') # 公開中かつ新しい順にフィルタ
+        queryset = super().get_queryset()
+        queryset = queryset.filter(is_published=True).order_by('-created_at')
         return queryset
 
 
@@ -46,6 +46,7 @@ class ItemDetailView(DetailView):
         context['related_items'] = related_items
         return context
 
+
 @method_decorator(basic_auth_required, name='dispatch')
 class ManageItemListView(ListView):
     model = Item
@@ -53,8 +54,8 @@ class ManageItemListView(ListView):
     context_object_name = 'items'
 
     def get_queryset(self):
-        queryset = super().get_queryset()  # デフォルトのクエリセット（全商品）を取得
-        return queryset.order_by('-created_at')  # 新しい順に並べ替え
+        queryset = super().get_queryset()
+        return queryset.order_by('-created_at')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -75,11 +76,12 @@ class ManageItemListView(ListView):
 
         return context
 
+
 @method_decorator(basic_auth_required, name='dispatch')
 class ManageItemCreateView(CreateView):
     model = Item
+    form_class = ItemForm
     template_name = 'item/manage_item_form.html'
-    fields = ['name', 'description', 'price', 'stock', 'sku', 'image', 'is_published']
     success_url = reverse_lazy('item:manage_item_list')
 
     def get_context_data(self, **kwargs):
@@ -88,11 +90,12 @@ class ManageItemCreateView(CreateView):
         context['title'] = '商品作成'
         return context
 
+
 @method_decorator(basic_auth_required, name='dispatch')
 class ManageItemUpdateView(UpdateView):
     model = Item
+    form_class = ItemForm
     template_name = 'item/manage_item_form.html'
-    fields = ['name', 'description', 'price', 'stock', 'sku', 'image', 'is_published']
     success_url = reverse_lazy('item:manage_item_list')
 
     def get_context_data(self, **kwargs):
@@ -100,6 +103,7 @@ class ManageItemUpdateView(UpdateView):
         context['action'] = 'update'
         context['title'] = '商品更新'
         return context
+
 
 @method_decorator(basic_auth_required, name='dispatch')
 class ManageItemDeleteView(DeleteView):
@@ -113,7 +117,6 @@ class ManageItemDeleteView(DeleteView):
         # 削除対象のオブジェクトを取得
         self.object = self.get_object()
         # 削除前に商品名を保存
-        # 削除後はself.objectにアクセスできないため事前保存が必要
         item_name = self.object.name
         # 親クラス(DeleteView)の削除処理を実行
         response = super().delete(request, *args, **kwargs)

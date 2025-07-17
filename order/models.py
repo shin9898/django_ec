@@ -37,23 +37,27 @@ class Order(models.Model):
     def __str__(self):
         return f"Order {self.id}"
 
-    def get_total_cost(self):
+    @property
+    def total_cost(self):
         """割引前の商品合計額を計算"""
-        return sum(item.get_cost() for item in self.items.all())
+        return sum(item.cost for item in self.items.all())
 
-    def get_discount_amount(self):
+    @property
+    def discount_amount(self):
         """割引額の取得"""
         if self.promotion_code:
             return self.promotion_code.discount
         return 0
 
+    @property
     def total_price_after_discount(self):
         """最終支払い額を計算して返す"""
-        if self.get_total_cost() <= self.get_discount_amount():
+        if self.total_cost <= self.discount_amount:
             return 0
-        return self.get_total_cost() - self.get_discount_amount()
+        return self.total_cost - self.discount_amount
 
-    def get_full_address(self):
+    @property
+    def full_address(self):
         """完全な住所を取得"""
         address_parts = [
             f"〒{self.postal_code}",
@@ -86,7 +90,8 @@ class OrderItem(models.Model):
     def __str__(self):
         return f"{self.item_name} x {self.quantity}"
 
-    def get_cost(self):
+    @property
+    def cost(self):
         """小計を計算"""
         if self.item_price is None:
             return 0

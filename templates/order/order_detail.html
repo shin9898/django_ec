@@ -128,7 +128,7 @@ order.id }}{% endblock %} {% block content %}
               </div>
               <div class="col-md-2 text-md-center mt-3 mt-md-0">
                 <h6 class="text-success mb-0">
-                  ¥{{ item.get_cost|floatformat:0 }}
+                  ¥{{ item.cost|floatformat:0 }}
                 </h6>
                 <small class="text-muted">小計</small>
               </div>
@@ -147,12 +147,12 @@ order.id }}{% endblock %} {% block content %}
           </h6>
           <div class="d-flex justify-content-between mb-2">
             <span>商品合計</span>
-            <span>¥{{ order.get_total_cost|floatformat:0 }}</span>
+            <span>¥{{ order.total_cost|floatformat:0 }}</span>
           </div>
-          {% if order.get_discount_amount > 0 %}
+          {% if order.discount_amount > 0 %}
           <div class="d-flex justify-content-between mb-2">
             <span>クーポン割引額</span>
-            <span class="text-success">-¥{{ order.get_discount_amount|floatformat:0 }}</span>
+            <span class="text-success">-¥{{ order.discount_amount|floatformat:0 }}</span>
           </div>
           {% else %}
           {% endif %}
@@ -173,7 +173,7 @@ order.id }}{% endblock %} {% block content %}
           <p class="mb-2">
             <strong>{{ order.last_name }} {{ order.first_name }} 様</strong>
           </p>
-          <address class="mb-0">{{ order.get_full_address }}</address>
+          <address class="mb-0">{{ order.full_address }}</address>
         </div>
 
         <!-- お支払い方法 -->

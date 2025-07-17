@@ -49,7 +49,7 @@ class OrderAdmin(admin.ModelAdmin):
         'get_total_cost_display',
         'get_total_price_after_discount_display',
         'get_discount_amount_display',
-        'get_full_address',
+        'full_address',
         'promotion_code',
     ]
     fieldsets = (
@@ -84,17 +84,17 @@ class OrderAdmin(admin.ModelAdmin):
 
     def get_total_cost_display(self, obj):
         """商品合計金額を表示"""
-        total = obj.get_total_cost()
+        total = obj.total_cost
         return f"¥{total:,}" if total else "¥0"
     get_total_cost_display.short_description = '合計金額'
 
     def get_total_price_after_discount_display(self, obj):
-        total = obj.total_price_after_discount()
+        total = obj.total_price_after_discount
         return f"¥{total:,}" if total else "¥0"
     get_total_price_after_discount_display.short_description = '支払い総額'
 
     def get_discount_amount_display(self, obj):
-        discount = obj.get_discount_amount()
+        discount = obj.discount_amount
         return f"-¥{discount:,}" if discount else "¥0"
     get_discount_amount_display.short_description = "割引金額"
 
@@ -128,6 +128,6 @@ class OrderItemAdmin(admin.ModelAdmin):
 
     def get_cost_display(self, obj):
         """小計を表示"""
-        cost = obj.get_cost()
+        cost = obj.cost
         return f"¥{cost:,}" if cost else "¥0"
     get_cost_display.short_description = '小計'
